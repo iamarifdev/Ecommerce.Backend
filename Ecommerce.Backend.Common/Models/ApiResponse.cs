@@ -1,0 +1,9 @@
+namespace Ecommerce.Backend.Common.Models
+{
+  public class ApiResponse<TResult>
+  {
+    public bool Success { get; set; }
+    public TResult Result { get; set; }
+    public string Message { get; set; }
+  }
+}
