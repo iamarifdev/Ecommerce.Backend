@@ -23,19 +23,27 @@ namespace Ecommerce.Backend.Entities
 
   public class ShippingDetail
   {
+    [BsonIgnoreIfNull]
     [BsonElement("weight")]
-    public double Weight { get; set; }
+    public double? Weight { get; set; }
 
+    [BsonIgnoreIfNull]
     [BsonElement("width")]
-    public double Width { get; set; }
+    public double? Width { get; set; }
 
+    [BsonIgnoreIfNull]
     [BsonElement("height")]
-    public double Height { get; set; }
+    public double? Height { get; set; }
 
+    [BsonIgnoreIfNull]
     [BsonElement("depth")]
-    public double Depth { get; set; }
+    public double? Depth { get; set; }
+
+    [BsonIgnoreIfNull]
+    [BsonElement("size")]
+    public double? Size { get; set; }
   }
-  
+
   public class Product : BaseEntity
   {
     [BsonIgnoreIfNull]
