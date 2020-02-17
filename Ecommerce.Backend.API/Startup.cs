@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
+using AutoMapper;
+using Ecommerce.Backend.API.AutoMappingProfiles;
 using Ecommerce.Backend.API.Helpers;
 using Ecommerce.Backend.API.Middlewares;
 using Ecommerce.Backend.Common.Configurations;
@@ -31,9 +33,11 @@ namespace Ecommerce.Backend.API
     {
       services.Configure<ApiBehaviorOptions>(Options => Options.SuppressModelStateInvalidFilter = true);
       services.Configure<DatabaseSetting>(Configuration.GetSection(nameof(DatabaseSetting)));
+      services.Configure<AppConfig>(Configuration.GetSection(nameof(AppConfig)));
       services.Configure<JwtConfig>(Configuration.GetSection(nameof(JwtConfig)));
 
       services.AddSingleton<IDatabaseSetting>(s => s.GetRequiredService<IOptions<DatabaseSetting>>().Value);
+      services.AddSingleton<IAppConfig>(s => s.GetRequiredService<IOptions<AppConfig>>().Value);
       services.AddSingleton<IJwtConfig>(s => s.GetRequiredService<IOptions<JwtConfig>>().Value);
 
       var dbSetting = Configuration.GetSection(nameof(DatabaseSetting)).Get<DatabaseSetting>();
@@ -48,7 +52,7 @@ namespace Ecommerce.Backend.API
       services.AddCors();
       services.AddControllers();
 
-      // services.AddAutoMapper(config => config.AddProfile(new UserMappingProfile()), typeof(Startup));
+      services.AddAutoMapper(config => config.AddProfile(new ProductMappingProfile()), typeof(Startup));
       // services.AddDbContext<TokenStoreDbContext>(options => options.UseSqlite("Filename=./tokenstore.db"));
 
       services.AddMvc(Options => Options.Filters.Add(new ValidateModelStateAttribute()))
@@ -130,7 +134,7 @@ namespace Ecommerce.Backend.API
       {
         app.UseHsts();
       }
-
+      app.UseStaticFiles();
       app.UseHttpsRedirection();
       app.UseRouting();
       // app.UseAuthentication();

@@ -3,8 +3,8 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Ecommerce.Backend.Entities
 {
-    // [BsonId]
-    public class CartProduct
+  // [BsonId]
+  public class CartProduct
   {
     [BsonIgnoreIfNull]
     [BsonElement("sku")]
@@ -40,6 +40,5 @@ namespace Ecommerce.Backend.Entities
     [BsonElement("products")]
     [BsonRequired]
     public List<CartProduct> Products { get; set; } = new List<CartProduct>();
-
   }
 }
