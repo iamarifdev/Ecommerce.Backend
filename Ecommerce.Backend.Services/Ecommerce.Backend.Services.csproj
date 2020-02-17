@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ecommerce.Backend.Entities\Ecommerce.Backend.Entities.csproj" />
+    <ProjectReference Include="..\Ecommerce.Backend.Common\Ecommerce.Backend.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

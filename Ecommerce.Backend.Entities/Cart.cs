@@ -1,17 +1,28 @@
-using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Ecommerce.Backend.Entities
 {
-  // [BsonId]
-  public class CartProduct
+    // [BsonId]
+    public class CartProduct
   {
+    [BsonIgnoreIfNull]
+    [BsonElement("sku")]
+    public string SKU { get; set; }
+
+    [BsonElement("title")]
+    [BsonRequired]
+    public string Title { get; set; }
+
+    [BsonElement("quantity")]
+    [BsonRequired]
+    public int Quantity { get; set; }
+
     [BsonElement("price")]
     [BsonRequired]
     public double Price { get; set; }
   }
+
   public class Cart : BaseEntity
   {
     [BsonIgnoreIfNull]

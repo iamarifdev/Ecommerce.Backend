@@ -35,6 +35,7 @@ namespace Ecommerce.Backend.Entities
     [BsonElement("depth")]
     public double Depth { get; set; }
   }
+  
   public class Product : BaseEntity
   {
     [BsonIgnoreIfNull]
