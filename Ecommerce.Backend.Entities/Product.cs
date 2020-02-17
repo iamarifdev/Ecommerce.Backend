@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Ecommerce.Backend.Entities
@@ -50,6 +51,14 @@ namespace Ecommerce.Backend.Entities
     [BsonElement("sku")]
     public string SKU { get; set; }
 
+    [BsonElement("inStock")]
+    [BsonRequired]
+    public double InStock { get; set; }
+
+    [BsonElement("availibility")]
+    [BsonRequired]
+    public bool Availibility { get; set; } = true;
+
     [BsonElement("title")]
     [BsonRequired]
     public string Title { get; set; }
@@ -70,9 +79,17 @@ namespace Ecommerce.Backend.Entities
     [BsonRequired]
     public Pricing Pricing { get; set; }
 
+    [BsonElement("colors")]
     [BsonRequired]
-    [BsonElement("imageUrl")]
-    public string ImageUrl { get; set; }
+    public List<string> Colors { get; set; }
+
+    [BsonRequired]
+    [BsonElement("featureImageUrl")]
+    public string FeatureImageUrl { get; set; }
+
+    [BsonElement("images")]
+    [BsonRequired]
+    public List<string> Images { get; set; }
 
     [BsonElement("isEnabled")]
     [BsonRequired]
