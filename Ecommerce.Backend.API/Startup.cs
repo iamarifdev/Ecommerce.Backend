@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
 using AutoMapper;
 using Ecommerce.Backend.API.AutoMappingProfiles;
@@ -9,10 +10,12 @@ using Ecommerce.Backend.Services.Abstractions;
 using Ecommerce.Backend.Services.Implementations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -127,15 +130,20 @@ namespace Ecommerce.Backend.API
         });
       if (env.IsDevelopment())
       {
-        app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
         app.UseDeveloperExceptionPage();
       }
       else
       {
         app.UseHsts();
       }
-      app.UseStaticFiles();
       app.UseHttpsRedirection();
+      app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+      app.UseStaticFiles();
+      app.UseStaticFiles(new StaticFileOptions()
+      {
+        FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"uploads")),
+          RequestPath = new PathString("/assets")
+      });
       app.UseRouting();
       // app.UseAuthentication();
       // app.UseAuthorization();

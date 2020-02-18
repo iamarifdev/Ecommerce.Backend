@@ -143,16 +143,24 @@ namespace Ecommerce.Backend.API.Controllers
     /// </summary>
     /// <param name="productId"></param>
     [HttpPost("{productId}/upload/feature-image")]
-    public async Task<ActionResult<ApiResponse<Product>>> UploadFeatureImage(string productId, IFormFile featureImage)
+    public async Task<ActionResult<ApiResponse<string>>> UploadFeatureImage(string productId, IFormFile featureImage)
     {
       try
       {
-        // TODO: update the path to work with
-        var uploads = Path.Combine(_environment.WebRootPath, _appConfig.ProductFeatureImagesDirectory);
-        var featureImageUrl = Path.Combine(uploads, $"{productId}_{featureImage.FileName}");
-        featureImage.CopyTo(new FileStream(featureImageUrl, FileMode.Create));
-        var updatedProduct = await _productService.UpdateFeatureImage(productId, featureImageUrl);
-        return updatedProduct.CreateSuccessResponse("Product feature image updated.");
+        if (featureImage.Length < 1) return BadRequest("Invalid file");
+        var folderName = Path.Combine("uploads", _appConfig.ProductDirectory, _appConfig.ProductFeatureImagesDirectory);
+        var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+        if (!Directory.Exists(pathToSave)) Directory.CreateDirectory(pathToSave);
+        var fileName = $"{productId}_{featureImage.FileName}";
+        var fullPath = Path.Combine(pathToSave, fileName);
+        // todo change the url have host part
+        var featureImageUrl = Path.Combine("\\", folderName, fileName).Replace("\\", "/").Replace("uploads", "assets");
+        using(var stream = new FileStream(fullPath, FileMode.Create))
+        {
+          featureImage.CopyTo(stream);
+        }
+        await _productService.UpdateFeatureImage(productId, featureImageUrl);
+        return featureImageUrl.CreateSuccessResponse("Product feature image updated.");
       }
       catch (Exception exception)
       {
