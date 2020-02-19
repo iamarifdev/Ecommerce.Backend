@@ -26,11 +26,11 @@ namespace Ecommerce.Backend.Common.Helpers
     public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content)
     {
       var dataAsString = await content.ReadAsStringAsync();
-      return JsonSerializer.Deserialize<T>(dataAsString, new JsonSerializerOptions
+      var data = JsonSerializer.Deserialize<T>(dataAsString, new JsonSerializerOptions
       {
-        WriteIndented = true,
-          AllowTrailingCommas = true
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
       });
+      return data;
     }
   }
 }

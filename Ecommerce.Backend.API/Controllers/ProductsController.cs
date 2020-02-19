@@ -1,14 +1,13 @@
 using System;
-using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
 using Ecommerce.Backend.API.DTO;
 using Ecommerce.Backend.API.Helpers;
-using Ecommerce.Backend.Common.Configurations;
+using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,16 +17,14 @@ namespace Ecommerce.Backend.API.Controllers
   [ApiController]
   public class ProductsController : ControllerBase
   {
-    private readonly IProductService _productService;
     private readonly IMapper _mapper;
-    private readonly IWebHostEnvironment _environment;
-    private readonly IAppConfig _appConfig;
-    public ProductsController(IProductService productService, IMapper mapper, IWebHostEnvironment environment, IAppConfig appConfig)
+    private readonly HttpClient _http;
+    private readonly IProductService _productService;
+    public ProductsController(IProductService productService, IMapper mapper, EcommerceHttpClient httpClient)
     {
-      _productService = productService;
       _mapper = mapper;
-      _environment = environment;
-      _appConfig = appConfig;
+      _http = httpClient.Http;
+      _productService = productService;
     }
 
     /// <summary>
@@ -147,20 +144,12 @@ namespace Ecommerce.Backend.API.Controllers
     {
       try
       {
-        if (featureImage.Length < 1) return BadRequest("Invalid file");
-        var folderName = Path.Combine("uploads", _appConfig.ProductDirectory, _appConfig.ProductFeatureImagesDirectory);
-        var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-        if (!Directory.Exists(pathToSave)) Directory.CreateDirectory(pathToSave);
-        var fileName = $"{productId}_{featureImage.FileName}";
-        var fullPath = Path.Combine(pathToSave, fileName);
-        // todo change the url have host part
-        var featureImageUrl = Path.Combine("\\", folderName, fileName).Replace("\\", "/").Replace("uploads", "assets");
-        using(var stream = new FileStream(fullPath, FileMode.Create))
-        {
-          featureImage.CopyTo(stream);
-        }
-        await _productService.UpdateFeatureImage(productId, featureImageUrl);
-        return featureImageUrl.CreateSuccessResponse("Product feature image updated.");
+        var formData = new MultipartFormDataContent();
+        formData.Add(new StreamContent(featureImage.OpenReadStream()), "featureImage", featureImage.FileName);
+        var response = await _http.PostAsync($"api/drive/products/{productId}/upload/featured-image", formData);
+        var fileResult = await response.Content.ReadAsJsonAsync<ApiResponse<string>>();
+        await _productService.UpdateFeatureImage(productId, fileResult.Result);
+        return fileResult.Result.CreateSuccessResponse("Product featured image updated.");
       }
       catch (Exception exception)
       {

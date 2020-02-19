@@ -1,21 +1,19 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 using AutoMapper;
 using Ecommerce.Backend.API.AutoMappingProfiles;
 using Ecommerce.Backend.API.Helpers;
 using Ecommerce.Backend.API.Middlewares;
 using Ecommerce.Backend.Common.Configurations;
+using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Services.Abstractions;
 using Ecommerce.Backend.Services.Implementations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -36,11 +34,11 @@ namespace Ecommerce.Backend.API
     {
       services.Configure<ApiBehaviorOptions>(Options => Options.SuppressModelStateInvalidFilter = true);
       services.Configure<DatabaseSetting>(Configuration.GetSection(nameof(DatabaseSetting)));
-      services.Configure<AppConfig>(Configuration.GetSection(nameof(AppConfig)));
+      services.Configure<ApiConfig>(Configuration.GetSection(nameof(ApiConfig)));
       services.Configure<JwtConfig>(Configuration.GetSection(nameof(JwtConfig)));
 
       services.AddSingleton<IDatabaseSetting>(s => s.GetRequiredService<IOptions<DatabaseSetting>>().Value);
-      services.AddSingleton<IAppConfig>(s => s.GetRequiredService<IOptions<AppConfig>>().Value);
+      services.AddSingleton<IApiConfig>(s => s.GetRequiredService<IOptions<ApiConfig>>().Value);
       services.AddSingleton<IJwtConfig>(s => s.GetRequiredService<IOptions<JwtConfig>>().Value);
 
       var dbSetting = Configuration.GetSection(nameof(DatabaseSetting)).Get<DatabaseSetting>();
@@ -48,6 +46,7 @@ namespace Ecommerce.Backend.API
       services.RegisterAllIndex();
 
       // add services here
+      services.AddScoped<EcommerceHttpClient>();
       services.AddScoped<IProductService, ProductService>();
       // services.AddScoped<IUserService, UserService>();
       // services.AddScoped<AuthService>();
@@ -138,12 +137,12 @@ namespace Ecommerce.Backend.API
       }
       app.UseHttpsRedirection();
       app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-      app.UseStaticFiles();
-      app.UseStaticFiles(new StaticFileOptions()
-      {
-        FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"uploads")),
-          RequestPath = new PathString("/assets")
-      });
+      // app.UseStaticFiles();
+      // app.UseStaticFiles(new StaticFileOptions()
+      // {
+      //   FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"uploads")),
+      //     RequestPath = new PathString("/assets")
+      // });
       app.UseRouting();
       // app.UseAuthentication();
       // app.UseAuthorization();
