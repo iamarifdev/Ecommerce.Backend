@@ -1,7 +1,7 @@
 # Instruction for deployment with heroku
 
 ##### Add The Git Remote
-  heroku git:remote -a eshopweb-api -r heroku
+  heroku git:remote -a ewebshop-api -r heroku
 
 ##### To set custom buildpack to heroku
   heroku buildpacks:set jincod/dotnetcore
