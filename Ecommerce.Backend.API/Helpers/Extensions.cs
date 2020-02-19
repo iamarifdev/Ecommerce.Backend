@@ -1,4 +1,5 @@
 using Ecommerce.Backend.Common.Configurations;
+using Ecommerce.Backend.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Entities;
 
@@ -35,11 +36,15 @@ namespace Ecommerce.Backend.API.Helpers
 
     public static IServiceCollection RegisterAllIndex(this IServiceCollection services)
     {
-      // Role Index
-      // DB.Index<Role>()
-      //   .Key(x => x.Name, KeyType.Ascending)
-      //   .Option(o => o.Unique = true)
-      //   .Create();
+      // Product Index
+      DB.Index<Product>()
+        .Key(x => x.Title, KeyType.Ascending)
+        .Option(o => o.Unique = true)
+        .Create();
+      DB.Index<Product>()
+        .Key(x => x.SKU, KeyType.Ascending)
+        .Option(o => o.Unique = true)
+        .Create();
       return services;
     }
   }
