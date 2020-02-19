@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Ecommerce.Backend.Common.Helpers;
@@ -62,6 +63,14 @@ namespace Ecommerce.Backend.Services.Implementations
     {
       var update = Builders<Product>.Update
         .Set("FeatureImageUrl", featureImageUrl);
+      var updatedProduct = await _products.FindOneAndUpdateAsync(r => r.ID == productId, update);
+      return updatedProduct;
+    }
+
+    public async Task<Product> UpdateImages(string productId, List<string> imageUrls)
+    {
+      var update = Builders<Product>.Update
+        .Set("Images", imageUrls);
       var updatedProduct = await _products.FindOneAndUpdateAsync(r => r.ID == productId, update);
       return updatedProduct;
     }

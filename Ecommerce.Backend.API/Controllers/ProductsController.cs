@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -149,6 +150,31 @@ namespace Ecommerce.Backend.API.Controllers
         var response = await _http.PostAsync($"api/drive/products/{productId}/upload/featured-image", formData);
         var fileResult = await response.Content.ReadAsJsonAsync<ApiResponse<string>>();
         await _productService.UpdateFeatureImage(productId, fileResult.Result);
+        return fileResult.Result.CreateSuccessResponse("Product featured image updated.");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
+    /// Product feature image upload
+    /// </summary>
+    /// <param name="productId"></param>
+    [HttpPost("{productId}/upload/images")]
+    public async Task<ActionResult<ApiResponse<List<string>>>> UploadImages(string productId, List<IFormFile> images)
+    {
+      try
+      {
+        var formData = new MultipartFormDataContent();
+        images.ForEach(image =>
+        {
+          formData.Add(new StreamContent(image.OpenReadStream()), "images", image.FileName);
+        });
+        var response = await _http.PostAsync($"api/drive/products/{productId}/upload/images", formData);
+        var fileResult = await response.Content.ReadAsJsonAsync<ApiResponse<List<string>>>();
+        await _productService.UpdateImages(productId, fileResult.Result);
         return fileResult.Result.CreateSuccessResponse("Product featured image updated.");
       }
       catch (Exception exception)
