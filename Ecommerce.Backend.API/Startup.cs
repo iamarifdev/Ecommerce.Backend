@@ -53,7 +53,7 @@ namespace Ecommerce.Backend.API
 
       services.AddCors();
       services.AddControllers();
-
+      services.AddResponseCompression();
       services.AddAutoMapper(config => config.AddProfile(new ProductMappingProfile()), typeof(Startup));
       // services.AddDbContext<TokenStoreDbContext>(options => options.UseSqlite("Filename=./tokenstore.db"));
 
@@ -144,6 +144,7 @@ namespace Ecommerce.Backend.API
       //     RequestPath = new PathString("/assets")
       // });
       app.UseRouting();
+      app.UseResponseCompression();
       // app.UseAuthentication();
       // app.UseAuthorization();
       app.UseSwagger();

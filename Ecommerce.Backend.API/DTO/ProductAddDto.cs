@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
 
 namespace Ecommerce.Backend.API.DTO
 {
@@ -24,7 +23,7 @@ namespace Ecommerce.Backend.API.DTO
     public double? Width { get; set; }
     public double? Height { get; set; }
     public double? Depth { get; set; }
-    public double? Size { get; set; }
+    public List<double> Sizes { get; set; }
   }
   public class ProductAddDto
   {

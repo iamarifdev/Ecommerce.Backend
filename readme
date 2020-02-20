@@ -11,3 +11,9 @@
 
 ##### Finally, deployment
   git push heroku master
+
+
+# Instruction to connect remote mongo server
+>> mongo "mongodb+srv://bc-aymj0.gcp.mongodb.net/ewebshop"  --username arif
+>> Enter Password: <type password>
+>> <copy and paste the script>

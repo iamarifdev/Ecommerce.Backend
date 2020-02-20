@@ -41,8 +41,8 @@ namespace Ecommerce.Backend.Entities
     public double? Depth { get; set; }
 
     [BsonIgnoreIfNull]
-    [BsonElement("size")]
-    public double? Size { get; set; }
+    [BsonElement("sizes")]
+    public List<double> Sizes { get; set; }
   }
 
   public class Product : BaseEntity
