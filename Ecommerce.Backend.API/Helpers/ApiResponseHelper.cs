@@ -19,7 +19,7 @@ namespace Ecommerce.Backend.API.Helpers
 
     public static ApiResponse<TResult> CreateErrorResponse<TResult>(this TResult result) where TResult : Exception
     {
-      return new ApiResponse<TResult> { Message = $"{result.Message}\r\n{result.ToString()}", Result = null, Success = false };
+      return new ApiResponse<TResult> { Message = $"{result.Message}", Result = null, Success = false };
     }
 
     public static ApiResponse<Dictionary<string, IEnumerable<string>>> CreateErrorResponse(this ModelStateDictionary result)

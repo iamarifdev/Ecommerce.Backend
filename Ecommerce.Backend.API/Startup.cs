@@ -48,6 +48,7 @@ namespace Ecommerce.Backend.API
       // add services here
       services.AddScoped<EcommerceHttpClient>();
       services.AddScoped<IProductService, ProductService>();
+      services.AddScoped<ICartService, CartService>();
       // services.AddScoped<IUserService, UserService>();
       // services.AddScoped<AuthService>();
 
@@ -55,6 +56,7 @@ namespace Ecommerce.Backend.API
       services.AddControllers();
       services.AddResponseCompression();
       services.AddAutoMapper(config => config.AddProfile(new ProductMappingProfile()), typeof(Startup));
+      services.AddAutoMapper(config => config.AddProfile(new CartMappingProfile()), typeof(Startup));
       // services.AddDbContext<TokenStoreDbContext>(options => options.UseSqlite("Filename=./tokenstore.db"));
 
       services.AddMvc(Options => Options.Filters.Add(new ValidateModelStateAttribute()))
