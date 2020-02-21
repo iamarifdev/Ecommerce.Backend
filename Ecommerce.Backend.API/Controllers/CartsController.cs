@@ -23,6 +23,23 @@ namespace Ecommerce.Backend.API.Controllers
     }
 
     /// <summary>
+    /// Get Pagniated Carts
+    /// </summary>
+    [HttpGet("list")]
+    public async Task<ActionResult<ApiResponse<PagedList<Cart>>>> GatPagedProductList([FromQuery] PagedQuery query)
+    {
+      try
+      {
+        var pagedCartList = await _cartService.GetPaginatedCarts(query);
+        return pagedCartList.CreateSuccessResponse();
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
     /// Get Cart by ID
     /// </summary>
     [HttpGet("id")]

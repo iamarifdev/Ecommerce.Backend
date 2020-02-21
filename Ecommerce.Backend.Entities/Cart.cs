@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Ecommerce.Backend.Entities
@@ -9,9 +10,17 @@ namespace Ecommerce.Backend.Entities
     public const string InActive = "inactive";
   }
 
-  // [BsonId]
   public class CartProduct
   {
+    public CartProduct()
+    {
+      TotalPrice = UnitPrice * Quantity;
+    }
+
+    [BsonElement("productId")]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string ProductId { get; set; }
+
     [BsonIgnoreIfNull]
     [BsonElement("sku")]
     public string SKU { get; set; }
@@ -24,9 +33,13 @@ namespace Ecommerce.Backend.Entities
     [BsonRequired]
     public int Quantity { get; set; }
 
-    [BsonElement("price")]
+    [BsonElement("unitPrice")]
     [BsonRequired]
-    public double Price { get; set; }
+    public double UnitPrice { get; set; }
+
+    [BsonIgnoreIfNull]
+    [BsonElement("totalPrice")]
+    public double TotalPrice { get; set; }
   }
 
   public class Cart : BaseEntity
@@ -37,15 +50,15 @@ namespace Ecommerce.Backend.Entities
 
     [BsonIgnoreIfNull]
     [BsonElement("status")]
-    public string Status { get; set; }
+    public string Status { get; set; } = CartStatus.Active;
 
     [BsonElement("quantity")]
     [BsonRequired]
     public int Quantity { get; set; }
 
-    [BsonElement("total")]
+    [BsonElement("totalPrice")]
     [BsonRequired]
-    public double Total { get; set; }
+    public double TotalPrice { get; set; }
 
     [BsonElement("products")]
     [BsonRequired]

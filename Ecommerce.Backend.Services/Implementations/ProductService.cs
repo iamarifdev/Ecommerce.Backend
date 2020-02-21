@@ -61,9 +61,9 @@ namespace Ecommerce.Backend.Services.Implementations
 
     public async Task<Product> UpdateFeatureImage(string productId, string featureImageUrl)
     {
-      var update = Builders<Product>.Update
-        .Set("FeatureImageUrl", featureImageUrl);
-      var updatedProduct = await _products.FindOneAndUpdateAsync(r => r.ID == productId, update);
+      var update = Builders<Product>.Update.Set("FeatureImageUrl", featureImageUrl);
+      var options = new FindOneAndUpdateOptions<Product, Product> { ReturnDocument = ReturnDocument.After };
+      var updatedProduct = await _products.FindOneAndUpdateAsync<Product, Product>(r => r.ID == productId, update, options);
       return updatedProduct;
     }
 
@@ -71,7 +71,8 @@ namespace Ecommerce.Backend.Services.Implementations
     {
       var update = Builders<Product>.Update
         .Set("Images", imageUrls);
-      var updatedProduct = await _products.FindOneAndUpdateAsync(r => r.ID == productId, update);
+      var options = new FindOneAndUpdateOptions<Product, Product> { ReturnDocument = ReturnDocument.After };
+      var updatedProduct = await _products.FindOneAndUpdateAsync<Product, Product>(r => r.ID == productId, update, options);
       return updatedProduct;
     }
 
