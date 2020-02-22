@@ -1,4 +1,4 @@
-using Ecommerce.Backend.API.DTO;
+using Ecommerce.Backend.Common.DTO;
 using FluentValidation;
 
 namespace Ecommerce.Backend.API.Validators
@@ -8,9 +8,9 @@ namespace Ecommerce.Backend.API.Validators
     public AddCartProductValidator()
     {
       RuleFor(r => r.ProductId).NotEmpty();
-      RuleFor(r => r.Quantity).NotEqual(0);
-      RuleFor(r => r.Color).NotEmpty().MaximumLength(10);
-      RuleFor(r => r.Size).NotEqual(0);
+      RuleFor(r => r.Quantity).GreaterThan(0);
+      RuleFor(r => r.Color).NotEmpty().Matches(@"^#([a-f0-9]{3}){1,2}\b$");
+      RuleFor(r => r.Size).GreaterThan(0);
       RuleFor(r => r.CustomerId).NotNull().When(w => w.CustomerId != null);
     }
   }

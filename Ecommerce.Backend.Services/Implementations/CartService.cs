@@ -61,6 +61,9 @@ namespace Ecommerce.Backend.Services.Implementations
       return cart;
     }
 
+    /// <summary>
+    /// Add cart is not suitable to directly use
+    /// </summary>
     public async Task<Cart> AddCart(Cart cart)
     {
       cart.Quantity = cart.Products.Sum(s => s.Quantity);

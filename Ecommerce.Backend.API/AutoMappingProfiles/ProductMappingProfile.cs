@@ -1,5 +1,5 @@
 using AutoMapper;
-using Ecommerce.Backend.API.DTO;
+using Ecommerce.Backend.Common.DTO;
 using Ecommerce.Backend.Entities;
 
 namespace Ecommerce.Backend.API.AutoMappingProfiles
