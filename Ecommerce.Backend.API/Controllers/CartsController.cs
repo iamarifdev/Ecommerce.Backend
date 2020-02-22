@@ -57,16 +57,33 @@ namespace Ecommerce.Backend.API.Controllers
       }
     }
 
+    // /// <summary>
+    // /// Add a new cart
+    // /// </summary>
+    // [HttpPost("add")]
+    // public async Task<ActionResult<ApiResponse<Cart>>> Add(CartDto cartDto)
+    // {
+    //   try
+    //   {
+    //     var cart = _mapper.Map<Cart>(cartDto);
+    //     var createdCart = await _cartService.AddCart(cart);
+    //     return createdCart.CreateSuccessResponse("Cart created successfully!");
+    //   }
+    //   catch (Exception exception)
+    //   {
+    //     return BadRequest(exception.CreateErrorResponse());
+    //   }
+    // }
+
     /// <summary>
-    /// Add a new cart
+    /// Add a new cart product
     /// </summary>
-    [HttpPost("add")]
-    public async Task<ActionResult<ApiResponse<Cart>>> Add(CartDto cartDto)
+    [HttpPost("add/product")]
+    public async Task<ActionResult<ApiResponse<Cart>>> AddProduct(AddCartProductDto dto)
     {
       try
       {
-        var cart = _mapper.Map<Cart>(cartDto);
-        var createdCart = await _cartService.AddCart(cart);
+        var createdCart = await _cartService.AddCartProduct(dto.ProductId, dto.Quantity, dto.Color, dto.Size, dto.CustomerId);
         return createdCart.CreateSuccessResponse("Cart created successfully!");
       }
       catch (Exception exception)

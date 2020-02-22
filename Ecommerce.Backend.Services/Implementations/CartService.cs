@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -15,10 +16,12 @@ namespace Ecommerce.Backend.Services.Implementations
   public class CartService : ICartService
   {
     private readonly IMongoCollection<Cart> _carts;
+    private readonly IProductService _productService;
 
-    public CartService()
+    public CartService(IProductService productService)
     {
       _carts = DB.Collection<Cart>();
+      _productService = productService;
     }
 
     public async Task<PagedList<Cart>> GetPaginatedCarts(PagedQuery query)
@@ -60,7 +63,6 @@ namespace Ecommerce.Backend.Services.Implementations
 
     public async Task<Cart> AddCart(Cart cart)
     {
-      // TODO: associate customer id, if the customer is logged in
       cart.Quantity = cart.Products.Sum(s => s.Quantity);
       cart.Products.ForEach(cartProduct =>
       {
@@ -69,6 +71,31 @@ namespace Ecommerce.Backend.Services.Implementations
       });
       await _carts.InsertOneAsync(cart);
       return cart;
+    }
+
+    public async Task<Cart> AddCartProduct(string productId, double quantity, string color, double size, string customerId = "")
+    {
+      var product = await _productService.GetProductById(productId);
+      if (product == null) return null;
+      var cartProduct = new CartProduct
+      {
+        ProductId = product.ID,
+        Quantity = quantity,
+        SKU = product.SKU,
+        Title = product.Title,
+        UnitPrice = product.Pricing.Price
+      };
+
+      if (customerId == "") customerId = null;
+
+      var cart = new Cart
+      {
+        CustomerId = customerId,
+        Products = new List<CartProduct> { cartProduct },
+        Status = CartStatus.Active
+      };
+      var createdCart = await AddCart(cart);
+      return createdCart;
     }
 
     public async Task<Cart> UpdateCartById(string cartId, Cart cart)

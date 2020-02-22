@@ -4,10 +4,12 @@ using AutoMapper;
 using Ecommerce.Backend.API.AutoMappingProfiles;
 using Ecommerce.Backend.API.Helpers;
 using Ecommerce.Backend.API.Middlewares;
+using Ecommerce.Backend.API.Validators;
 using Ecommerce.Backend.Common.Configurations;
 using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Services.Abstractions;
 using Ecommerce.Backend.Services.Implementations;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -60,6 +62,7 @@ namespace Ecommerce.Backend.API
       // services.AddDbContext<TokenStoreDbContext>(options => options.UseSqlite("Filename=./tokenstore.db"));
 
       services.AddMvc(Options => Options.Filters.Add(new ValidateModelStateAttribute()))
+        .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<AddCartProductValidator>())
         .AddJsonOptions(options =>
         {
           options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;

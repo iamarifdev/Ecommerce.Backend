@@ -31,7 +31,7 @@ namespace Ecommerce.Backend.Entities
 
     [BsonElement("quantity")]
     [BsonRequired]
-    public int Quantity { get; set; }
+    public double Quantity { get; set; }
 
     [BsonElement("unitPrice")]
     [BsonRequired]
@@ -54,7 +54,7 @@ namespace Ecommerce.Backend.Entities
 
     [BsonElement("quantity")]
     [BsonRequired]
-    public int Quantity { get; set; }
+    public double Quantity { get; set; }
 
     [BsonElement("totalPrice")]
     [BsonRequired]

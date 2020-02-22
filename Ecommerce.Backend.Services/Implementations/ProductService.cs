@@ -53,6 +53,12 @@ namespace Ecommerce.Backend.Services.Implementations
       return products.ToPagedList(count);
     }
 
+    public async Task<Product> GetProductById(string productId)
+    {
+      var user = await _products.FindAsync<Product>(x => x.ID == productId).Result.FirstOrDefaultAsync();
+      return user;
+    }
+
     public async Task<Product> AddProduct(Product product)
     {
       await _products.InsertOneAsync(product);
