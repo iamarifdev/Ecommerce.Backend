@@ -1,0 +1,19 @@
+using Ecommerce.Backend.Common.DTO;
+using FluentValidation;
+
+namespace Ecommerce.Backend.API.Validators
+{
+  public class ProductColorValidator : AbstractValidator<ProductColorDto>
+  {
+    public ProductColorValidator()
+    {
+      RuleFor(r => r.Color).NotEmpty().Matches(@"^#([A-Fa-f0-9]{3}){1,2}\b$");
+      RuleFor(r => r.Images).NotEmpty().When(w => w.Images != null);
+      RuleFor(r => r.InStock).NotEmpty().GreaterThanOrEqualTo(0);
+      RuleFor(r => r.IsAvailable).NotEmpty();
+      RuleFor(r => r.Pricing).NotEmpty();
+      RuleFor(r => r.Pricing.Price).NotEmpty().When(w => w.Pricing != null).GreaterThan(0);
+      RuleFor(r => r.Sizes).NotEmpty().When(w => w.Sizes != null);
+    }
+  }
+}

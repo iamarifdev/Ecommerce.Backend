@@ -10,10 +10,9 @@ namespace Ecommerce.Backend.API.AutoMappingProfiles
     {
       CreateMap<ProductAddDto, Product>()
         .ForMember(product => product.ManufactureDetail, opt => opt.MapFrom(dto => dto.ManufactureDetail))
-        .ForMember(product => product.Pricing, opt => opt.MapFrom(dto => dto.Pricing))
-        .ForMember(product => product.ShippingDetail, opt => opt.MapFrom(dto => dto.ShippingDetail));
+        .ForMember(product => product.ProductColors, opt => opt.MapFrom(dto => dto.ProductColors));
       CreateMap<PricingDto, Pricing>();
-      CreateMap<ShippingDetailDto, ShippingDetail>();
+      CreateMap<ProductColorDto, ProductColor>();
       CreateMap<ManufactureDetailDto, ManufactureDetail>();
     }
   }

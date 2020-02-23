@@ -22,26 +22,30 @@ namespace Ecommerce.Backend.Entities
     public double Price { get; set; }
   }
 
-  public class ShippingDetail
+  public class ProductColor
   {
-    [BsonIgnoreIfNull]
-    [BsonElement("weight")]
-    public double? Weight { get; set; }
+    [BsonElement("color")]
+    [BsonRequired]
+    public string Color { get; set; }
 
-    [BsonIgnoreIfNull]
-    [BsonElement("width")]
-    public double? Width { get; set; }
+    [BsonElement("inStock")]
+    [BsonRequired]
+    public double InStock { get; set; }
 
-    [BsonIgnoreIfNull]
-    [BsonElement("height")]
-    public double? Height { get; set; }
+    [BsonElement("isAvailable")]
+    [BsonRequired]
+    public bool IsAvailable { get; set; } = true;
 
-    [BsonIgnoreIfNull]
-    [BsonElement("depth")]
-    public double? Depth { get; set; }
+    [BsonElement("images")]
+    [BsonRequired]
+    public List<string> Images { get; set; }
 
-    [BsonIgnoreIfNull]
+    [BsonElement("pricing")]
+    [BsonRequired]
+    public Pricing Pricing { get; set; }
+
     [BsonElement("sizes")]
+    [BsonRequired]
     public List<double> Sizes { get; set; }
   }
 
@@ -50,14 +54,6 @@ namespace Ecommerce.Backend.Entities
     [BsonIgnoreIfNull]
     [BsonElement("sku")]
     public string SKU { get; set; }
-
-    [BsonElement("inStock")]
-    [BsonRequired]
-    public double InStock { get; set; }
-
-    [BsonElement("availibility")]
-    [BsonRequired]
-    public bool Availibility { get; set; } = true;
 
     [BsonElement("title")]
     [BsonRequired]
@@ -71,25 +67,13 @@ namespace Ecommerce.Backend.Entities
     [BsonRequired]
     public ManufactureDetail ManufactureDetail { get; set; }
 
-    [BsonElement("shippingDetail")]
+    [BsonElement("productColors")]
     [BsonRequired]
-    public ShippingDetail ShippingDetail { get; set; }
-
-    [BsonElement("pricing")]
-    [BsonRequired]
-    public Pricing Pricing { get; set; }
-
-    [BsonElement("colors")]
-    [BsonRequired]
-    public List<string> Colors { get; set; }
+    public List<ProductColor> ProductColors { get; set; } = new List<ProductColor>();
 
     [BsonRequired]
     [BsonElement("featureImageUrl")]
     public string FeatureImageUrl { get; set; }
-
-    [BsonElement("images")]
-    [BsonRequired]
-    public List<string> Images { get; set; }
 
     [BsonElement("isEnabled")]
     [BsonRequired]

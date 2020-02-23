@@ -78,15 +78,19 @@ namespace Ecommerce.Backend.Services.Implementations
 
     public async Task<Cart> AddCartProduct(string productId, double quantity, string color, double size, string customerId = "")
     {
+      // todo change
       var product = await _productService.GetProductById(productId);
       if (product == null) return null;
+      var productColor = product.ProductColors.FirstOrDefault(x => x.Color == color);
+      if (productColor == null) return null;
+      if (!productColor.Sizes.Any(productSize => productSize == size)) return null;
       var cartProduct = new CartProduct
       {
         ProductId = product.ID,
         Quantity = quantity,
         SKU = product.SKU,
         Title = product.Title,
-        UnitPrice = product.Pricing.Price
+        UnitPrice = productColor?.Pricing.Price ?? 0,
       };
 
       if (customerId == "") customerId = null;

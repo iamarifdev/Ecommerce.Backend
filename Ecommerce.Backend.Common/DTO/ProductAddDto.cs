@@ -14,12 +14,13 @@ namespace Ecommerce.Backend.Common.DTO
     public double Price { get; set; }
   }
 
-  public class ShippingDetailDto
+  public class ProductColorDto
   {
-    public double? Weight { get; set; }
-    public double? Width { get; set; }
-    public double? Height { get; set; }
-    public double? Depth { get; set; }
+    public string Color { get; set; }
+    public double InStock { get; set; }
+    public bool IsAvailable { get; set; } = true;
+    public List<string> Images { get; set; }
+    public PricingDto Pricing { get; set; }
     public List<double> Sizes { get; set; }
   }
   public class ProductAddDto
@@ -30,8 +31,7 @@ namespace Ecommerce.Backend.Common.DTO
     public string Title { get; set; }
     public string Description { get; set; }
     public ManufactureDetailDto ManufactureDetail { get; set; }
-    public ShippingDetailDto ShippingDetail { get; set; }
-    public PricingDto Pricing { get; set; }
-    public List<string> Colors { get; set; }
+    public List<ProductColorDto> ProductColors { get; set; }
+    public bool IsEnabled { get; set; } = true;
   }
 }
