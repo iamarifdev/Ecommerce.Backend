@@ -42,11 +42,11 @@ namespace Ecommerce.Backend.Entities
 
     [BsonElement("images")]
     [BsonIgnoreIfNull]
-    public List<string> Images { get; set; }
+    public IEnumerable<string> Images { get; set; }
 
     [BsonElement("sizes")]
     [BsonRequired]
-    public List<double> Sizes { get; set; }
+    public IEnumerable<double> Sizes { get; set; }
   }
 
   public class Product : BaseEntity

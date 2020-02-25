@@ -162,8 +162,8 @@ namespace Ecommerce.Backend.API.Controllers
     /// Product feature image upload
     /// </summary>
     /// <param name="productId"></param>
-    [HttpPost("{productId}/upload/images")]
-    public async Task<ActionResult<ApiResponse<List<string>>>> UploadImages(string productId, List<IFormFile> images, string color)
+    [HttpPost("{productId}/upload/images/{color}")]
+    public async Task<ActionResult<ApiResponse<List<string>>>> UploadImages(string productId, string color, List<IFormFile> images)
     {
       try
       {

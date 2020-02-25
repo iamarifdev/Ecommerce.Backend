@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "start": "cd Ecommerce.Backend.API && dotnet watch run"
+  }
+}

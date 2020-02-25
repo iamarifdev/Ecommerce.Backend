@@ -83,7 +83,7 @@ namespace Ecommerce.Backend.API.Controllers
     {
       try
       {
-        var createdCart = await _cartService.AddCartProduct(dto.ProductId, dto.Quantity, dto.Color, dto.Size, dto.CustomerId);
+        var createdCart = await _cartService.AddCartProduct(dto);
         return createdCart.CreateSuccessResponse("Cart created successfully!");
       }
       catch (Exception exception)

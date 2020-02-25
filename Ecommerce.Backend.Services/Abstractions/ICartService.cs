@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Ecommerce.Backend.Common.DTO;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 
@@ -14,6 +15,6 @@ namespace Ecommerce.Backend.Services.Abstractions
     /// Add cart is not suitable
     /// </summary>
     Task<Cart> AddCart(Cart cart);
-    Task<Cart> AddCartProduct(string productId, double quantity, string color, double size, string customerId = "");
+    Task<Cart> AddCartProduct(AddCartProductDto dto);
   }
 }

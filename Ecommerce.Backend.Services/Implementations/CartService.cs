@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Ecommerce.Backend.Common.DTO;
 using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
@@ -75,28 +76,27 @@ namespace Ecommerce.Backend.Services.Implementations
       return cart;
     }
 
-    public async Task<Cart> AddCartProduct(string productId, double quantity, string color, double size, string customerId = "")
+    public async Task<Cart> AddCartProduct(AddCartProductDto dto)
     {
-      // todo change
-      var product = await _productService.GetProductById(productId);
+      var product = await _productService.GetProductById(dto.ProductId);
       if (product == null) return null;
-      var productColor = product.ProductColors.FirstOrDefault(x => x.ColorCode == color);
+      var productColor = product.ProductColors.FirstOrDefault(x => x.ColorCode.ToLower() == dto.Color.ToLower());
       if (productColor == null) return null;
-      if (!productColor.Sizes.Any(productSize => productSize == size)) return null;
+      if (!productColor.Sizes.Any(productSize => productSize == dto.Size)) return null;
       var cartProduct = new CartProduct
       {
         ProductId = product.ID,
-        Quantity = quantity,
+        Quantity = dto.Quantity,
         SKU = product.SKU,
         Title = product.Title,
         UnitPrice = product?.Pricing.Price ?? 0,
       };
 
-      if (customerId == "") customerId = null;
+      if (dto.CustomerId == "") dto.CustomerId = null;
 
       var cart = new Cart
       {
-        CustomerId = customerId,
+        CustomerId = dto.CustomerId,
         Products = new List<CartProduct> { cartProduct },
         Status = CartStatus.Active
       };

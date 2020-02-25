@@ -8,6 +8,7 @@ using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Entities;
 
@@ -32,23 +33,15 @@ namespace Ecommerce.Backend.Services.Implementations
       var count = (int) await _products.CountDocumentsAsync(filterConditions);
       var products = await _products
         .Find(filterConditions)
-        .Project(product => new ProductListItemDto
-        {
-          ID = product.ID,
-            SKU = product.SKU,
-            Description = product.Description,
-            ManufactureDetail = new ManufactureDetailDto
-            {
-              ModelNo = product.ManufactureDetail.ModelNo,
-                ReleaseDate = product.ManufactureDetail.ReleaseDate
-            },
-            ProductColors = product.ProductColors.Select(s => new ProductColorDto
-            {
-              ColorCode = s.ColorCode,
-                ColorName = s.ColorName
-            }),
-            Pricing = new PricingDto { Price = product.Pricing.Price }
-        })
+        .Project(product => new ProductListItemDto(
+          product.ID,
+          product.SKU,
+          product.Title,
+          product.Description,
+          new ManufactureDetailDto(product.ManufactureDetail.ModelNo, product.ManufactureDetail.ReleaseDate),
+          new PricingDto { Price = product.Pricing.Price },
+          product.ProductColors.Select(s => new ProductColorDto(s.ColorCode, s.ColorName))
+        ))
         .SortBy(product => product.Title)
         .Skip(query.PageSize * (query.Page - 1))
         .Limit(query.PageSize)
@@ -64,6 +57,13 @@ namespace Ecommerce.Backend.Services.Implementations
 
     public async Task<Product> AddProduct(Product product)
     {
+      product.ProductColors.ForEach(productColor =>
+      {
+        if (!productColor.ColorCode.Contains("#"))
+        {
+          productColor.ColorCode = $"#{productColor.ColorCode.ToLower()}";
+        }
+      });
       await _products.InsertOneAsync(product);
       return product;
     }
@@ -78,17 +78,10 @@ namespace Ecommerce.Backend.Services.Implementations
 
     public async Task<Product> UpdateImages(string productId, string color, IEnumerable<string> imageUrls)
     {
-      DB.Update<Product>()
-        .Match(a => a.ID == productId)
-        .Modify(x => x.ProductColors.FirstOrDefault(i => i.ColorCode == color).Images, imageUrls)
-        .Modify(x => x.CurrentDate(a => a.ModifiedOn))
-        .Modify(x => x.CurrentDate(a => a.UpdatedAt))
-        .Execute();
-      // var update = Builders<Product>.Update
-      //   .Set("Images", imageUrls);
-      // var options = new FindOneAndUpdateOptions<Product, Product> { ReturnDocument = ReturnDocument.After };
-      // var updatedProduct = await _products.FindOneAndUpdateAsync<Product, Product>(r => r.ID == productId, update, options);
-      // await _products.UpdateOne()
+      var filter = Builders<Product>.Filter;
+      var condition = filter.Eq(x => x.ID, productId) & filter.Eq("productColors.colorCode", $"#{color.ToLower()}");
+      var update = Builders<Product>.Update.Set("productColors.$.images", imageUrls);
+      var result = await _products.UpdateOneAsync(condition, update);
       var updatedProduct = await GetProductById(productId);
       return updatedProduct;
     }
