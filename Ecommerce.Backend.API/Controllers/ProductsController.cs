@@ -32,7 +32,7 @@ namespace Ecommerce.Backend.API.Controllers
     /// Get Pagniated Products
     /// </summary>
     [HttpGet("list")]
-    public async Task<ActionResult<ApiResponse<PagedList<Product>>>> GatPagedProductList([FromQuery] PagedQuery query)
+    public async Task<ActionResult<ApiResponse<PagedList<ProductListItemDto>>>> GatPagedProductList([FromQuery] PagedQuery query)
     {
       try
       {
@@ -45,23 +45,23 @@ namespace Ecommerce.Backend.API.Controllers
       }
     }
 
-    // /// <summary>
-    // /// Get Product by ID
-    // /// </summary>
-    // /// <param name="id"></param>
-    // [HttpGet("id/{id}")]
-    // public async Task<ActionResult<ApiResponse<Product>>> Get(String id)
-    // {
-    //     try
-    //     {
-    //         var product = await _productService.GetProductById(id);
-    //         return product.CreateSuccessResponse();
-    //     }
-    //     catch (Exception exception)
-    //     {
-    //         return BadRequest(exception.CreateErrorResponse());
-    //     }
-    // }
+    /// <summary>
+    /// Get Product by ID
+    /// </summary>
+    /// <param name="id"></param>
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ApiResponse<Product>>> Get(String id)
+    {
+      try
+      {
+        var product = await _productService.GetProductById(id);
+        return product.CreateSuccessResponse();
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
 
     /// <summary>
     /// Add a new product
@@ -163,7 +163,7 @@ namespace Ecommerce.Backend.API.Controllers
     /// </summary>
     /// <param name="productId"></param>
     [HttpPost("{productId}/upload/images")]
-    public async Task<ActionResult<ApiResponse<List<string>>>> UploadImages(string productId, List<IFormFile> images)
+    public async Task<ActionResult<ApiResponse<List<string>>>> UploadImages(string productId, List<IFormFile> images, string color)
     {
       try
       {
@@ -174,7 +174,7 @@ namespace Ecommerce.Backend.API.Controllers
         });
         var response = await _http.PostAsync($"api/drive/products/{productId}/upload/images", formData);
         var fileResult = await response.Content.ReadAsJsonAsync<ApiResponse<List<string>>>();
-        await _productService.UpdateImages(productId, fileResult.Result);
+        await _productService.UpdateImages(productId, color, fileResult.Result);
         return fileResult.Result.CreateSuccessResponse("Product featured image updated.");
       }
       catch (Exception exception)

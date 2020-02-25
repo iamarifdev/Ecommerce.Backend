@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "start": "dotnet watch run"
+  }
+}

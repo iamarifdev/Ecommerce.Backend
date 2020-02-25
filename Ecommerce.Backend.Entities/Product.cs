@@ -24,9 +24,13 @@ namespace Ecommerce.Backend.Entities
 
   public class ProductColor
   {
-    [BsonElement("color")]
+    [BsonElement("colorCode")]
     [BsonRequired]
-    public string Color { get; set; }
+    public string ColorCode { get; set; }
+
+    [BsonElement("colorName")]
+    [BsonRequired]
+    public string ColorName { get; set; }
 
     [BsonElement("inStock")]
     [BsonRequired]
@@ -37,12 +41,8 @@ namespace Ecommerce.Backend.Entities
     public bool IsAvailable { get; set; } = true;
 
     [BsonElement("images")]
-    [BsonRequired]
+    [BsonIgnoreIfNull]
     public List<string> Images { get; set; }
-
-    [BsonElement("pricing")]
-    [BsonRequired]
-    public Pricing Pricing { get; set; }
 
     [BsonElement("sizes")]
     [BsonRequired]
@@ -69,7 +69,11 @@ namespace Ecommerce.Backend.Entities
 
     [BsonElement("productColors")]
     [BsonRequired]
-    public List<ProductColor> ProductColors { get; set; } = new List<ProductColor>();
+    public List<ProductColor> ProductColors { get; set; }
+
+    [BsonElement("pricing")]
+    [BsonRequired]
+    public Pricing Pricing { get; set; }
 
     [BsonRequired]
     [BsonElement("featureImageUrl")]
@@ -82,6 +86,5 @@ namespace Ecommerce.Backend.Entities
     [BsonElement("isDeleted")]
     [BsonRequired]
     public bool IsDeleted { get; set; } = false;
-
   }
 }

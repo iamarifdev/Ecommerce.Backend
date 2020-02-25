@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Ecommerce.Backend.Common.DTO;
 using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
@@ -20,7 +22,7 @@ namespace Ecommerce.Backend.Services.Implementations
       _products = DB.Collection<Product>();
     }
 
-    public async Task<PagedList<Product>> GetPaginatedProducts(PagedQuery query)
+    public async Task<PagedList<ProductListItemDto>> GetPaginatedProducts(PagedQuery query)
     {
       Expression<Func<Product, bool>> allConditions = (product) => !product.IsDeleted;
       Expression<Func<Product, bool>> conditions = (product) => !product.IsDeleted && product.IsEnabled;
@@ -30,23 +32,24 @@ namespace Ecommerce.Backend.Services.Implementations
       var count = (int) await _products.CountDocumentsAsync(filterConditions);
       var products = await _products
         .Find(filterConditions)
-        // .Project(user => new User
-        // {
-        //     ID = user.ID,
-        //         RoleId = user.RoleId,
-        //         Username = user.Username,
-        //         FullName = user.FullName,
-        //         Email = user.Email,
-        //         PhoneNumbers = user.PhoneNumbers,
-        //         ContactNo = user.ContactNo,
-        //         ContactPerson = user.ContactPerson,
-        //         Remarks = user.Remarks,
-        //         CreatedAt = user.CreatedAt,
-        //         UpdatedAt = user.UpdatedAt,
-        //         AvatarUrl = user.AvatarUrl,
-        //         IsEnabled = user.IsEnabled
-        // })
-        .SortBy(user => user.Title)
+        .Project(product => new ProductListItemDto
+        {
+          ID = product.ID,
+            SKU = product.SKU,
+            Description = product.Description,
+            ManufactureDetail = new ManufactureDetailDto
+            {
+              ModelNo = product.ManufactureDetail.ModelNo,
+                ReleaseDate = product.ManufactureDetail.ReleaseDate
+            },
+            ProductColors = product.ProductColors.Select(s => new ProductColorDto
+            {
+              ColorCode = s.ColorCode,
+                ColorName = s.ColorName
+            }),
+            Pricing = new PricingDto { Price = product.Pricing.Price }
+        })
+        .SortBy(product => product.Title)
         .Skip(query.PageSize * (query.Page - 1))
         .Limit(query.PageSize)
         .ToListAsync();
@@ -55,8 +58,8 @@ namespace Ecommerce.Backend.Services.Implementations
 
     public async Task<Product> GetProductById(string productId)
     {
-      var user = await _products.FindAsync<Product>(x => x.ID == productId).Result.FirstOrDefaultAsync();
-      return user;
+      var product = await _products.FindAsync<Product>(x => x.ID == productId).Result.FirstOrDefaultAsync();
+      return product;
     }
 
     public async Task<Product> AddProduct(Product product)
@@ -73,12 +76,20 @@ namespace Ecommerce.Backend.Services.Implementations
       return updatedProduct;
     }
 
-    public async Task<Product> UpdateImages(string productId, List<string> imageUrls)
+    public async Task<Product> UpdateImages(string productId, string color, IEnumerable<string> imageUrls)
     {
-      var update = Builders<Product>.Update
-        .Set("Images", imageUrls);
-      var options = new FindOneAndUpdateOptions<Product, Product> { ReturnDocument = ReturnDocument.After };
-      var updatedProduct = await _products.FindOneAndUpdateAsync<Product, Product>(r => r.ID == productId, update, options);
+      DB.Update<Product>()
+        .Match(a => a.ID == productId)
+        .Modify(x => x.ProductColors.FirstOrDefault(i => i.ColorCode == color).Images, imageUrls)
+        .Modify(x => x.CurrentDate(a => a.ModifiedOn))
+        .Modify(x => x.CurrentDate(a => a.UpdatedAt))
+        .Execute();
+      // var update = Builders<Product>.Update
+      //   .Set("Images", imageUrls);
+      // var options = new FindOneAndUpdateOptions<Product, Product> { ReturnDocument = ReturnDocument.After };
+      // var updatedProduct = await _products.FindOneAndUpdateAsync<Product, Product>(r => r.ID == productId, update, options);
+      // await _products.UpdateOne()
+      var updatedProduct = await GetProductById(productId);
       return updatedProduct;
     }
 

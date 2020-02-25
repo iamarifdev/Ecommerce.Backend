@@ -7,7 +7,6 @@ using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Entities;
 
@@ -81,7 +80,7 @@ namespace Ecommerce.Backend.Services.Implementations
       // todo change
       var product = await _productService.GetProductById(productId);
       if (product == null) return null;
-      var productColor = product.ProductColors.FirstOrDefault(x => x.Color == color);
+      var productColor = product.ProductColors.FirstOrDefault(x => x.ColorCode == color);
       if (productColor == null) return null;
       if (!productColor.Sizes.Any(productSize => productSize == size)) return null;
       var cartProduct = new CartProduct
@@ -90,7 +89,7 @@ namespace Ecommerce.Backend.Services.Implementations
         Quantity = quantity,
         SKU = product.SKU,
         Title = product.Title,
-        UnitPrice = productColor?.Pricing.Price ?? 0,
+        UnitPrice = product?.Pricing.Price ?? 0,
       };
 
       if (customerId == "") customerId = null;
