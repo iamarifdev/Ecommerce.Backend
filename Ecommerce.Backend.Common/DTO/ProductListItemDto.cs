@@ -10,6 +10,7 @@ namespace Ecommerce.Backend.Common.DTO
       string sku,
       string title,
       string description,
+      string featureImageUrl,
       ManufactureDetailDto manufactureDetail,
       PricingDto pricing,
       IEnumerable<ProductColorDto> productColors
@@ -19,6 +20,7 @@ namespace Ecommerce.Backend.Common.DTO
       SKU = sku;
       Title = title;
       Description = description;
+      FeatureImageUrl = featureImageUrl;
       ManufactureDetail = manufactureDetail;
       Pricing = pricing;
       ProductColors = productColors;
@@ -27,6 +29,7 @@ namespace Ecommerce.Backend.Common.DTO
     public string SKU { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
+    public string FeatureImageUrl { get; set; }
     public ManufactureDetailDto ManufactureDetail { get; set; }
     public PricingDto Pricing { get; set; }
     public IEnumerable<ProductColorDto> ProductColors { get; set; }

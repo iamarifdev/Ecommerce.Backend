@@ -8,7 +8,6 @@ using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Entities;
 
@@ -38,6 +37,7 @@ namespace Ecommerce.Backend.Services.Implementations
           product.SKU,
           product.Title,
           product.Description,
+          product.FeatureImageUrl,
           new ManufactureDetailDto(product.ManufactureDetail.ModelNo, product.ManufactureDetail.ReleaseDate),
           new PricingDto { Price = product.Pricing.Price },
           product.ProductColors.Select(s => new ProductColorDto(s.ColorCode, s.ColorName))
