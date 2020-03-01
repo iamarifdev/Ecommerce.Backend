@@ -5,13 +5,9 @@ namespace Ecommerce.Backend.Common.DTO
   public class CartProductDto
   {
     public string ProductId { get; set; }
-
     public string SKU { get; set; }
-
     public string Title { get; set; }
-
     public int Quantity { get; set; }
-
     public double UnitPrice { get; set; }
     public double TotalPrice { get; set; }
   }

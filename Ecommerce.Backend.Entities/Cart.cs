@@ -37,6 +37,14 @@ namespace Ecommerce.Backend.Entities
     [BsonRequired]
     public double UnitPrice { get; set; }
 
+    [BsonElement("color")]
+    [BsonRequired]
+    public string Color { get; set; }
+
+    [BsonElement("size")]
+    [BsonRequired]
+    public double Size { get; set; }
+
     [BsonIgnoreIfNull]
     [BsonElement("totalPrice")]
     public double TotalPrice { get; set; }

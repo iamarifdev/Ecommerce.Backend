@@ -90,6 +90,8 @@ namespace Ecommerce.Backend.Services.Implementations
         SKU = product.SKU,
         Title = product.Title,
         UnitPrice = product?.Pricing.Price ?? 0,
+        Size = dto.Size,
+        Color = dto.Color
       };
 
       if (dto.CustomerId == "") dto.CustomerId = null;
