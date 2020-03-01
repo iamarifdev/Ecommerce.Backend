@@ -1,5 +1,6 @@
 {
   "scripts": {
-    "start": "cd Ecommerce.Backend.API && dotnet watch run"
+    "start": "cd Ecommerce.Backend.API && dotnet watch run",
+    "rebuild": "dotnet clean && dotnet build"
   }
 }
