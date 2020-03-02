@@ -58,6 +58,11 @@ namespace Ecommerce.Backend.Services.Implementations
       Expression<Func<Cart, bool>> cartCustomerIdFilter = (c) => c.CustomerId == customerId && c.Status == CartStatus.Active;
       var filterConditions = Builders<Cart>.Filter.Where(cartId != null ? cartIdFilter : cartCustomerIdFilter);
       var cart = await _carts.FindAsync<Cart>(filterConditions).Result.FirstOrDefaultAsync();
+      cart.Products.ForEach(async(p) =>
+      {
+        var product = await _productService.GetProductById(p.ProductId);
+        p.FeatureImageUrl = product.FeatureImageUrl;
+      });
       return cart;
     }
 
@@ -73,6 +78,11 @@ namespace Ecommerce.Backend.Services.Implementations
         cart.TotalPrice += cartProduct.TotalPrice;
       });
       await _carts.InsertOneAsync(cart);
+      cart.Products.ForEach(async(p) =>
+      {
+        var product = await _productService.GetProductById(p.ProductId);
+        p.FeatureImageUrl = product.FeatureImageUrl;
+      });
       return cart;
     }
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Entities;
 
 namespace Ecommerce.Backend.Entities
 {
@@ -48,6 +49,9 @@ namespace Ecommerce.Backend.Entities
     [BsonIgnoreIfNull]
     [BsonElement("totalPrice")]
     public double TotalPrice { get; set; }
+
+    [Ignore]
+    public string FeatureImageUrl { get; set; }
   }
 
   public class Cart : BaseEntity
