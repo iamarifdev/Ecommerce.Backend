@@ -100,13 +100,32 @@ namespace Ecommerce.Backend.API.Controllers
     /// Update Cart product quantity
     /// </summary>
     [HttpPatch("update/{cartId}/product-quantity")]
-    public async Task<ActionResult<ApiResponse<Cart>>> UpdateCartProductQuantity(string cartId, UpdateCartProductDto dto)
+    public async Task<ActionResult<ApiResponse<Cart>>> UpdateProductQuantity(string cartId, UpdateCartProductDto dto)
     {
       try
       {
         if (string.IsNullOrWhiteSpace(cartId)) return BadRequest("Cart ID is empty.");
         var updatedCart = await _cartService.UpdateProductQuantity(cartId, dto);
         return updatedCart.CreateSuccessResponse("Cart updated successfully!");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
+    /// Remove Cart product
+    /// </summary>
+    [HttpDelete("remove/{cartId}/product/{cartProductId}")]
+    public async Task<ActionResult<ApiResponse<Cart>>> RemoveProduct(string cartId, string cartProductId)
+    {
+      try
+      {
+        if (string.IsNullOrWhiteSpace(cartId)) return BadRequest("Cart ID is empty.");
+        if (string.IsNullOrWhiteSpace(cartProductId)) return BadRequest("Cart product ID is empty.");
+        var updatedCart = await _cartService.RemoveCartProduct(cartId, cartProductId);
+        return updatedCart.CreateSuccessResponse("Cart product removed successfully!");
       }
       catch (Exception exception)
       {

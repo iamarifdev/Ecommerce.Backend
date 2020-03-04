@@ -93,6 +93,7 @@ namespace Ecommerce.Backend.Services.Implementations
       if (dto.CustomerId == "") dto.CustomerId = null;
       cart.CustomerId = dto.CustomerId;
       var updatedCart = await _updateCartById(cart.ID, cart);
+      updatedCart = await _populateCartProductsImage(updatedCart);
       return updatedCart;
     }
 
@@ -184,6 +185,19 @@ namespace Ecommerce.Backend.Services.Implementations
         .Set("Products", cart.Products);
       var options = new FindOneAndUpdateOptions<Cart, Cart> { ReturnDocument = ReturnDocument.After };
       var updatedCart = await _carts.FindOneAndUpdateAsync<Cart, Cart>(r => r.ID == cartId, update, options);
+      updatedCart = await _populateCartProductsImage(updatedCart);
+      return updatedCart;
+    }
+
+    public async Task<Cart> RemoveCartProduct(string cartId, string cartProductId)
+    {
+      var filterDef = Builders<Cart>.Filter;
+      var updateDef = Builders<Cart>.Update;
+
+      var condition = filterDef.Eq(x => x.ID, cartId);
+      var update = updateDef.PullFilter(p => p.Products, f => f.ID == cartProductId);
+      var options = new FindOneAndUpdateOptions<Cart, Cart> { ReturnDocument = ReturnDocument.After };
+      var updatedCart = await _carts.FindOneAndUpdateAsync(condition, update, options);
       updatedCart = await _populateCartProductsImage(updatedCart);
       return updatedCart;
     }

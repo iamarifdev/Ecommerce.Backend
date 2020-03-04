@@ -11,5 +11,6 @@ namespace Ecommerce.Backend.Services.Abstractions
     Task<Cart> GetCartById(string cartId = null, string customerId = null);
     Task<Cart> AddCartProduct(AddCartProductDto dto);
     Task<Cart> UpdateProductQuantity(string cartId, UpdateCartProductDto dto);
+    Task<Cart> RemoveCartProduct(string cartId, string cartProductId);
   }
 }
