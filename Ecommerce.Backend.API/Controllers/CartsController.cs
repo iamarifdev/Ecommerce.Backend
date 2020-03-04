@@ -47,6 +47,10 @@ namespace Ecommerce.Backend.API.Controllers
     {
       try
       {
+        if (string.IsNullOrWhiteSpace(cartId) && string.IsNullOrWhiteSpace(customerId))
+        {
+          return BadRequest("Cart ID or Customer ID should be present in query params.");
+        }
         var cart = await _cartService.GetCartById(cartId, customerId);
         if (cart == null) throw new Exception("No cart information is found");
         return cart.CreateSuccessResponse();
@@ -93,16 +97,16 @@ namespace Ecommerce.Backend.API.Controllers
     }
 
     /// <summary>
-    /// Update Cart by ID
+    /// Update Cart product quantity
     /// </summary>
-    [HttpPut("update/{cartId}")]
-    public async Task<ActionResult<ApiResponse<Cart>>> Update(string cartId, CartDto cartDto)
+    [HttpPatch("update/{cartId}/product-quantity")]
+    public async Task<ActionResult<ApiResponse<Cart>>> UpdateCartProductQuantity(string cartId, UpdateCartProductDto dto)
     {
       try
       {
-        var cart = _mapper.Map<Cart>(cartDto);
-        cart = await _cartService.UpdateCartById(cartId, cart);
-        return cart.CreateSuccessResponse("Cart updated successfully!");
+        if (string.IsNullOrWhiteSpace(cartId)) return BadRequest("Cart ID is empty.");
+        var updatedCart = await _cartService.UpdateProductQuantity(cartId, dto);
+        return updatedCart.CreateSuccessResponse("Cart updated successfully!");
       }
       catch (Exception exception)
       {

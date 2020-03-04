@@ -18,6 +18,9 @@ namespace Ecommerce.Backend.Entities
       TotalPrice = UnitPrice * Quantity;
     }
 
+    [BsonElement("id")]
+    public string ID { get; set; } = ObjectId.GenerateNewId().ToString();
+
     [BsonElement("productId")]
     [BsonRepresentation(BsonType.ObjectId)]
     public string ProductId { get; set; }

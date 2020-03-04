@@ -12,6 +12,7 @@ namespace Ecommerce.Backend.API.Validators
       RuleFor(r => r.Color).NotEmpty().Matches(@"^#([A-Fa-f0-9]{3}){1,2}\b$");
       RuleFor(r => r.Size).GreaterThan(0);
       RuleFor(r => r.CustomerId).NotNull().When(w => w.CustomerId != null);
+      RuleFor(r => r.CartId).NotNull().When(w => w.CartId != null);
     }
   }
 }

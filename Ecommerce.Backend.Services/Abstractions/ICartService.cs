@@ -9,12 +9,7 @@ namespace Ecommerce.Backend.Services.Abstractions
   {
     Task<PagedList<Cart>> GetPaginatedCarts(PagedQuery query);
     Task<Cart> GetCartById(string cartId = null, string customerId = null);
-    Task<Cart> UpdateCartById(string cartId, Cart cart);
-
-    /// <summary>
-    /// Add cart is not suitable
-    /// </summary>
-    Task<Cart> AddCart(Cart cart);
     Task<Cart> AddCartProduct(AddCartProductDto dto);
+    Task<Cart> UpdateProductQuantity(string cartId, UpdateCartProductDto dto);
   }
 }
