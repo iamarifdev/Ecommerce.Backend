@@ -40,7 +40,10 @@ namespace Ecommerce.Backend.Services.Implementations
           product.FeatureImageUrl,
           new ManufactureDetailDto(product.ManufactureDetail.ModelNo, product.ManufactureDetail.ReleaseDate),
           new PricingDto { Price = product.Pricing.Price },
-          product.ProductColors.Select(s => new ProductColorDto(s.ColorCode, s.ColorName))
+          product.ProductColors.Select(s => new ProductColorDto(s.ColorCode, s.ColorName)),
+          product.IsEnabled,
+          product.CreatedAt,
+          product.UpdatedAt
         ))
         .SortBy(product => product.Title)
         .Skip(query.PageSize * (query.Page - 1))

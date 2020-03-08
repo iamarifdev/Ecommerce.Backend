@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Ecommerce.Backend.Common.DTO
@@ -13,7 +14,10 @@ namespace Ecommerce.Backend.Common.DTO
       string featureImageUrl,
       ManufactureDetailDto manufactureDetail,
       PricingDto pricing,
-      IEnumerable<ProductColorDto> productColors
+      IEnumerable<ProductColorDto> productColors,
+      bool isEnabled,
+      DateTime createdAt,
+      DateTime updatedAt
     )
     {
       ID = id;
@@ -24,6 +28,9 @@ namespace Ecommerce.Backend.Common.DTO
       ManufactureDetail = manufactureDetail;
       Pricing = pricing;
       ProductColors = productColors;
+      IsEnabled = isEnabled;
+      CreatedAt = createdAt;
+      UpdatedAt = updatedAt;
     }
     public string ID { get; set; }
     public string SKU { get; set; }
@@ -33,5 +40,8 @@ namespace Ecommerce.Backend.Common.DTO
     public ManufactureDetailDto ManufactureDetail { get; set; }
     public PricingDto Pricing { get; set; }
     public IEnumerable<ProductColorDto> ProductColors { get; set; }
+    public bool IsEnabled { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
   }
 }
