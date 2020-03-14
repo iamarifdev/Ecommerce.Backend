@@ -48,13 +48,13 @@ namespace Ecommerce.Backend.API.Controllers
     /// <summary>
     /// Get Product by ID
     /// </summary>
-    /// <param name="id"></param>
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ApiResponse<Product>>> Get(String id)
+    /// <param name="productId"></param>
+    [HttpGet("{productId}")]
+    public async Task<ActionResult<ApiResponse<Product>>> Get(String productId)
     {
       try
       {
-        var product = await _productService.GetProductById(id);
+        var product = await _productService.GetProductById(productId);
         return product.CreateSuccessResponse();
       }
       catch (Exception exception)
@@ -81,60 +81,61 @@ namespace Ecommerce.Backend.API.Controllers
       }
     }
 
-    // /// <summary>
-    // /// Update a product by Id
-    // /// </summary>
-    // /// <param name="id"></param>
-    // [HttpPut("update/{id}")]
-    // public async Task<ActionResult<ApiResponse<Product>>> Update(string id, UpdateProductDto product)
-    // {
-    //     try
-    //     {
-    //         var updatedProduct = await _productService.UpdateProductById(id, _mapper.Map<Product>(product));
-    //         return updatedProduct.CreateSuccessResponse("Product updated successfully!");
-    //     }
-    //     catch (Exception exception)
-    //     {
-    //         return BadRequest(exception.CreateErrorResponse());
-    //     }
-    // }
+    /// <summary>
+    /// Update a product by Id
+    /// </summary>
+    /// <param name="productId"></param>
+    [HttpPut("update/{productId}")]
+    public async Task<ActionResult<ApiResponse<Product>>> Update(string productId, ProductUpdateDto dto)
+    {
+      try
+      {
+        var mappedProduct = _mapper.Map<Product>(dto);
+        var updatedProduct = await _productService.UpdateProductById(productId, mappedProduct);
+        return updatedProduct.CreateSuccessResponse("Product updated successfully!");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
 
-    // /// <summary>
-    // /// Activate a product by Id
-    // /// </summary>
-    // /// <param name="id"></param>
-    // [HttpPut("activate/{id}")]
-    // public async Task<ActionResult<ApiResponse<Product>>> ToggleActivation(string id, ActivateDto activateDto)
-    // {
-    //     try
-    //     {
-    //         var updatedProduct = await _productService.ToggleActivationById(id, activateDto.Status);
-    //         var status = activateDto.Status ? "activated" : "deactivated";
-    //         return updatedProduct.CreateSuccessResponse($"Product {status} successfully!");
-    //     }
-    //     catch (Exception exception)
-    //     {
-    //         return BadRequest(exception.CreateErrorResponse());
-    //     }
-    // }
+    /// <summary>
+    /// Activate a product by Id
+    /// </summary>
+    /// <param name="productId"></param>
+    [HttpPut("activate/{productId}")]
+    public async Task<ActionResult<ApiResponse<Product>>> ToggleActivation(string productId, ActivateDto activateDto)
+    {
+      try
+      {
+        var updatedProduct = await _productService.ToggleActivationById(productId, activateDto.Status);
+        var status = activateDto.Status ? "activated" : "deactivated";
+        return updatedProduct.CreateSuccessResponse($"Product {status} successfully!");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
 
-    // /// <summary>
-    // /// Delete a product by Id
-    // /// </summary>
-    // /// <param name="id"></param>
-    // [HttpDelete("delete/{id}")]
-    // public async Task<ActionResult<ApiResponse<Product>>> Delete(string id)
-    // {
-    //     try
-    //     {
-    //         var updatedProduct = await _productService.RemoveProductById(id);
-    //         return updatedProduct.CreateSuccessResponse("Product deleted successfully!");
-    //     }
-    //     catch (Exception exception)
-    //     {
-    //         return BadRequest(exception.CreateErrorResponse());
-    //     }
-    // }
+    /// <summary>
+    /// Delete a product by Id
+    /// </summary>
+    /// <param name="productId"></param>
+    [HttpDelete("delete/{productId}")]
+    public async Task<ActionResult<ApiResponse<Product>>> Delete(string productId)
+    {
+      try
+      {
+        var deletedProduct = await _productService.RemoveProductById(productId);
+        return deletedProduct.CreateSuccessResponse("Product deleted successfully!");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
 
     /// <summary>
     /// Product feature image upload

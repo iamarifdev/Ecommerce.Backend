@@ -11,6 +11,9 @@ namespace Ecommerce.Backend.Services.Abstractions
     Task<PagedList<ProductListItemDto>> GetPaginatedProducts(PagedQuery query);
     Task<Product> GetProductById(string productId);
     Task<Product> AddProduct(Product product);
+    Task<Product> UpdateProductById(string productId, Product product);
+    Task<Product> ToggleActivationById(string productId, bool status);
+    Task<Product> RemoveProductById(string productId);
     Task<Product> UpdateFeatureImage(string productId, string featureImageUrl);
     Task<Product> UpdateImages(string productId, string color, IEnumerable<string> imageUrls);
 
