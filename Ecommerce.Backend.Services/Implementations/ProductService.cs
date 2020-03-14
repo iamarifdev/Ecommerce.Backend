@@ -83,7 +83,7 @@ namespace Ecommerce.Backend.Services.Implementations
     {
       var filter = Builders<Product>.Filter;
       var condition = filter.Eq(x => x.ID, productId) & filter.Eq("productColors.colorCode", $"#{color.ToLower()}");
-      var update = Builders<Product>.Update.Set("productColors.$.images", imageUrls);
+      var update = Builders<Product>.Update.AddToSetEach("productColors.$.images", imageUrls);
       var result = await _products.UpdateOneAsync(condition, update);
       var updatedProduct = await GetProductById(productId);
       return updatedProduct;
