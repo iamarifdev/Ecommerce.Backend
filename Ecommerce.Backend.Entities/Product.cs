@@ -49,7 +49,7 @@ namespace Ecommerce.Backend.Entities
     public IEnumerable<double> Sizes { get; set; }
   }
 
-  public class Product : BaseEntity
+  public class Product : BaseEntityWithStatus
   {
     [BsonIgnoreIfNull]
     [BsonElement("sku")]
@@ -78,13 +78,5 @@ namespace Ecommerce.Backend.Entities
     [BsonRequired]
     [BsonElement("featureImageUrl")]
     public string FeatureImageUrl { get; set; }
-
-    [BsonElement("isEnabled")]
-    [BsonRequired]
-    public bool IsEnabled { get; set; } = true;
-
-    [BsonElement("isDeleted")]
-    [BsonRequired]
-    public bool IsDeleted { get; set; } = false;
   }
 }
