@@ -63,9 +63,10 @@ namespace Ecommerce.Backend.Services.Implementations
     {
       product.ProductColors.ForEach(productColor =>
       {
+        productColor.ColorCode = productColor.ColorCode.ToLower();
         if (!productColor.ColorCode.Contains("#"))
         {
-          productColor.ColorCode = $"#{productColor.ColorCode.ToLower()}";
+          productColor.ColorCode = $"#{productColor.ColorCode}";
         }
       });
       await _products.InsertOneAsync(product);
@@ -114,7 +115,7 @@ namespace Ecommerce.Backend.Services.Implementations
       var update = Builders<Product>.Update
         .Set(s => s.IsEnabled, status)
         .Set(s => s.UpdatedAt, DateTime.Now);
-      var updatedProduct = await _products.FindOneAndUpdateAsync(x => x.ID == productId, update);
+      var updatedProduct = await _products.FindOneAndUpdateAsync<Product>(x => x.ID == productId, update, _options);
       return updatedProduct;
     }
 
