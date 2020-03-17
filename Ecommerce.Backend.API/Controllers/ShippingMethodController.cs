@@ -1,10 +1,8 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
 using Ecommerce.Backend.API.Helpers;
 using Ecommerce.Backend.Common.DTO;
-using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
@@ -18,12 +16,10 @@ namespace Ecommerce.Backend.API.Controllers
   public class ShippingMethodController : ControllerBase
   {
     private readonly IMapper _mapper;
-    private readonly HttpClient _http;
     private readonly IShippingMethodService _shippingMethodService;
-    public ShippingMethodController(IShippingMethodService shippingMethodService, IMapper mapper, EcommerceHttpClient httpClient)
+    public ShippingMethodController(IShippingMethodService shippingMethodService, IMapper mapper)
     {
       _mapper = mapper;
-      _http = httpClient.Http;
       _shippingMethodService = shippingMethodService;
     }
 

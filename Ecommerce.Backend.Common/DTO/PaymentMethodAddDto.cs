@@ -1,10 +1,9 @@
 namespace Ecommerce.Backend.Common.DTO
 {
-  public class ShippingMethodAddDto
+  public class PaymentMethodAddDto
   {
     public string MethodName { get; set; }
-    public double Cost { get; set; }
-    public bool IsOutSide { get; set; }
+    public bool HasPaymentGateway { get; set; }
     public bool IsEnabled { get; set; }
   }
 }
