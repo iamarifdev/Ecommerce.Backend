@@ -5,6 +5,7 @@ using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Entities;
 
@@ -31,6 +32,12 @@ namespace Ecommerce.Backend.Services.Implementations
       return entity;
     }
 
+    public async Task<TDto> GetById<TDto>(string id, Expression<Func<TEntity, TDto>> projection) where TDto : class
+    {
+      var dto = await _entities.Find(x => x.ID == id).Project(projection).FirstOrDefaultAsync();
+      return dto;
+    }
+
     public async Task<PagedList<TEntity>> GetPaginatedList(PagedQuery query)
     {
       Expression<Func<TEntity, bool>> allConditions = (entity) => !entity.IsDeleted;
@@ -41,7 +48,25 @@ namespace Ecommerce.Backend.Services.Implementations
       var count = (int) await _entities.CountDocumentsAsync(filterConditions);
       var entities = await _entities
         .Find(filterConditions)
-        .SortBy(product => product.UpdatedAt)
+        .Sort(new BsonDocument(query.Sort, query.Order))
+        .Skip(query.PageSize * (query.Page - 1))
+        .Limit(query.PageSize)
+        .ToListAsync();
+      return entities.ToPagedList(count);
+    }
+
+    public async Task<PagedList<TDto>> GetPaginatedList<TDto>(PagedQuery query, Expression<Func<TEntity, TDto>> projection) where TDto : class
+    {
+      Expression<Func<TEntity, bool>> allConditions = (entity) => !entity.IsDeleted;
+      Expression<Func<TEntity, bool>> conditions = (entity) => !entity.IsDeleted && entity.IsEnabled;
+
+      var filterConditions = Builders<TEntity>.Filter.Where(query.All ? allConditions : conditions);
+
+      var count = (int) await _entities.CountDocumentsAsync(filterConditions);
+      var entities = await _entities
+        .Find(filterConditions)
+        .Project(projection)
+        .Sort(new BsonDocument(query.Sort, query.Order))
         .Skip(query.PageSize * (query.Page - 1))
         .Limit(query.PageSize)
         .ToListAsync();

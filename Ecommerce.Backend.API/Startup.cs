@@ -53,6 +53,7 @@ namespace Ecommerce.Backend.API
       services.AddScoped<ICartService, CartService>();
       services.AddScoped<IShippingMethodService, ShippingMethodService>();
       services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+      services.AddScoped<ICustomerService, CustomerService>();
       // services.AddScoped<AuthService>();
 
       services.AddCors();
