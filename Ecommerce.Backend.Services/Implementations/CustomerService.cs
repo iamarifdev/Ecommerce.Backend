@@ -15,6 +15,7 @@ namespace Ecommerce.Backend.Services.Implementations
         FirstName = customer.FirstName,
           LastName = customer.LastName,
           AvatarUrl = customer.AvatarUrl,
+          Email = customer.Email,
           PhoneNo = customer.PhoneNo,
           ProfileCompleteness = customer.ProfileCompleteness
       });

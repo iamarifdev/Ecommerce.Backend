@@ -27,7 +27,7 @@ namespace Ecommerce.Backend.API.Controllers
     /// Get Pagniated customers
     /// </summary>
     [HttpGet("list")]
-    public async Task<ActionResult<ApiResponse<PagedList<CustomerListItemDto>>>> GatPagedCustomerList([FromQuery] PagedQuery query)
+    public async Task<ActionResult<ApiResponse<PagedList<CustomerListItemDto>>>> GatPagedList([FromQuery] PagedQuery query)
     {
       try
       {
@@ -49,8 +49,8 @@ namespace Ecommerce.Backend.API.Controllers
     {
       try
       {
-        var shippingMethod = await _customerService.GetById(customerId);
-        return shippingMethod.CreateSuccessResponse();
+        var customer = await _customerService.GetById(customerId);
+        return customer.CreateSuccessResponse();
       }
       catch (Exception exception)
       {
@@ -62,11 +62,11 @@ namespace Ecommerce.Backend.API.Controllers
     /// Add a new customer
     /// </summary>
     [HttpPost("add")]
-    public async Task<ActionResult<ApiResponse<Customer>>> Add(Customer customer)
+    public async Task<ActionResult<ApiResponse<Customer>>> Add(CustomerAddDto dto)
     {
       try
       {
-        // var shippingMethod = _mapper.Map<Customer>(dto);
+        var customer = _mapper.Map<Customer>(dto);
         var createdCustomer = await _customerService.Add(customer);
         return createdCustomer.CreateSuccessResponse("Customer created successfully!");
       }
@@ -81,11 +81,11 @@ namespace Ecommerce.Backend.API.Controllers
     /// </summary>
     /// <param name="customerId"></param>
     [HttpPut("update/{customerId}")]
-    public async Task<ActionResult<ApiResponse<Customer>>> Update(string customerId, Customer shippingMethod)
+    public async Task<ActionResult<ApiResponse<Customer>>> Update(string customerId, Customer customer)
     {
       try
       {
-        var updatedCustomer = await _customerService.UpdateById(customerId, shippingMethod);
+        var updatedCustomer = await _customerService.UpdateById(customerId, customer);
         return updatedCustomer.CreateSuccessResponse("Customer updated successfully!");
       }
       catch (Exception exception)

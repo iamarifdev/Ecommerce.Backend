@@ -45,6 +45,16 @@ namespace Ecommerce.Backend.API.Helpers
         .Key(x => x.SKU, KeyType.Ascending)
         .Option(o => o.Unique = true)
         .Create();
+      
+      // Customer Index
+      DB.Index<Customer>()
+        .Key(x => x.PhoneNo, KeyType.Descending)
+        .Option(o => o.Unique = true)
+        .Create();
+      DB.Index<Customer>()
+        .Key(x => x.Email, KeyType.Descending)
+        .Option(o => o.Unique = true)
+        .Create();
       return services;
     }
   }
