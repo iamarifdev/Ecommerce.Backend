@@ -17,9 +17,23 @@ namespace Ecommerce.Backend.Entities
 
   public class Order : BaseEntityWithStatus
   {
+    public Order()
+    {
+        
+    }
+
+    public Order(string id, One<Customer> customer)
+    {
+      ID = id;
+      OrderCustomer = customer.ToEntity();        
+    }
+
     [BsonElement("customer")]
     [BsonRequired]
     public One<Customer> Customer { get; set; }
+
+    [BsonIgnore]
+    public Customer OrderCustomer {get;set;}
 
     [BsonElement("orderProducts")]
     [BsonRequired]
@@ -85,6 +99,6 @@ namespace Ecommerce.Backend.Entities
 
     [BsonElement("updatedAt")]
     [BsonRequired]
-    public DateTime UpdatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; } = DateTime.Now;
   }
 }
