@@ -13,11 +13,11 @@ namespace Ecommerce.Backend.API.Controllers
   [Route("api/payment-methods")]
   [ApiController]
 
-  public class PaymentMethodController : ControllerBase
+  public class PaymentMethodsController : ControllerBase
   {
     private readonly IMapper _mapper;
     private readonly IPaymentMethodService _paymentMethodService;
-    public PaymentMethodController(IPaymentMethodService paymentMethodService, IMapper mapper)
+    public PaymentMethodsController(IPaymentMethodService paymentMethodService, IMapper mapper)
     {
       _mapper = mapper;
       _paymentMethodService = paymentMethodService;

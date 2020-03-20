@@ -12,6 +12,7 @@ namespace Ecommerce.Backend.Services.Implementations
     {
       var items = await GetPaginatedList<CustomerListItemDto>(query, customer => new CustomerListItemDto
       {
+        ID = customer.ID,
         FirstName = customer.FirstName,
           LastName = customer.LastName,
           AvatarUrl = customer.AvatarUrl,
@@ -20,6 +21,22 @@ namespace Ecommerce.Backend.Services.Implementations
           ProfileCompleteness = customer.ProfileCompleteness
       });
       return items;
+    }
+
+    public async Task<Customer> UpdateBillingAddress(string customerId, BillingAddress address)
+    {
+      var customer = await GetById(customerId);
+      customer.BillingAddress = address;
+      var updatedCustomer = await UpdateById(customerId, customer);
+      return updatedCustomer;
+    }
+
+    public async Task<Customer> UpdateShippingAddress(string customerId, ShippingAddress address)
+    {
+      var customer = await GetById(customerId);
+      customer.ShippingAddress = address;
+      var updatedCustomer = await UpdateById(customerId, customer);
+      return updatedCustomer;
     }
   }
 }

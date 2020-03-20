@@ -9,6 +9,8 @@ namespace Ecommerce.Backend.API.AutoMappingProfiles
     public CustomerMappingProfile()
     {
       CreateMap<CustomerAddDto, Customer>();
+      CreateMap<CustomerBillingAddressDto, BillingAddress>();
+      CreateMap<CustomerShippingAddressDto, ShippingAddress>();
     }
   }
 }

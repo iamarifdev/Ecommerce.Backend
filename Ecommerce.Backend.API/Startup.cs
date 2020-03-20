@@ -63,6 +63,7 @@ namespace Ecommerce.Backend.API
       services.AddAutoMapper(config => config.AddProfile(new CartMappingProfile()), typeof(Startup));
       services.AddAutoMapper(config => config.AddProfile(new ShippingMethodMappingProfile()), typeof(Startup));
       services.AddAutoMapper(config => config.AddProfile(new PaymentMethodMappingProfile()), typeof(Startup));
+      services.AddAutoMapper(config => config.AddProfile(new CustomerMappingProfile()), typeof(Startup));
       // services.AddDbContext<TokenStoreDbContext>(options => options.UseSqlite("Filename=./tokenstore.db"));
 
       services.AddMvc(Options => Options.Filters.Add(new ValidateModelStateAttribute()))

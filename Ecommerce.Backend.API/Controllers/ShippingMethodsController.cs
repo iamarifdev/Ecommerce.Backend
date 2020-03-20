@@ -13,11 +13,11 @@ namespace Ecommerce.Backend.API.Controllers
   [Route("api/shipping-methods")]
   [ApiController]
 
-  public class ShippingMethodController : ControllerBase
+  public class ShippingMethodsController : ControllerBase
   {
     private readonly IMapper _mapper;
     private readonly IShippingMethodService _shippingMethodService;
-    public ShippingMethodController(IShippingMethodService shippingMethodService, IMapper mapper)
+    public ShippingMethodsController(IShippingMethodService shippingMethodService, IMapper mapper)
     {
       _mapper = mapper;
       _shippingMethodService = shippingMethodService;

@@ -107,6 +107,7 @@ namespace Ecommerce.Backend.Services.Implementations
       {
         if (property.Name == "ID") continue;
         if (property.Name == "CreatedAt") continue;
+        if (property.Name == "UpdatedAt") continue;
         var value = property.GetValue(entity);
         if (value == null) continue;
         update = update.Set(property.Name, value);

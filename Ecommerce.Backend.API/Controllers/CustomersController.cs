@@ -13,11 +13,11 @@ namespace Ecommerce.Backend.API.Controllers
   [Route("api/customers")]
   [ApiController]
 
-  public class CustomerController : ControllerBase
+  public class CustomersController : ControllerBase
   {
     private readonly IMapper _mapper;
     private readonly ICustomerService _customerService;
-    public CustomerController(ICustomerService customerService, IMapper mapper)
+    public CustomersController(ICustomerService customerService, IMapper mapper)
     {
       _mapper = mapper;
       _customerService = customerService;
@@ -87,6 +87,44 @@ namespace Ecommerce.Backend.API.Controllers
       {
         var updatedCustomer = await _customerService.UpdateById(customerId, customer);
         return updatedCustomer.CreateSuccessResponse("Customer updated successfully!");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
+    /// Update customer billing address by Id
+    /// </summary>
+    /// <param name="customerId"></param>
+    [HttpPatch("update/{customerId}/address/billing")]
+    public async Task<ActionResult<ApiResponse<Customer>>> UpdateBillingAddress(string customerId, CustomerBillingAddressDto dto)
+    {
+      try
+      {
+        var billingAddress = _mapper.Map<BillingAddress>(dto);
+        var updatedCustomer = await _customerService.UpdateBillingAddress(customerId, billingAddress);
+        return updatedCustomer.CreateSuccessResponse("Customer billing address updated successfully!");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
+    /// Update customer billing address by Id
+    /// </summary>
+    /// <param name="customerId"></param>
+    [HttpPatch("update/{customerId}/address/shipping")]
+    public async Task<ActionResult<ApiResponse<Customer>>> UpdateShippingAddress(string customerId, CustomerShippingAddressDto dto)
+    {
+      try
+      {
+        var shippingAddress = _mapper.Map<ShippingAddress>(dto);
+        var updatedCustomer = await _customerService.UpdateBillingAddress(customerId, shippingAddress);
+        return updatedCustomer.CreateSuccessResponse("Customer shipping address updated successfully!");
       }
       catch (Exception exception)
       {
