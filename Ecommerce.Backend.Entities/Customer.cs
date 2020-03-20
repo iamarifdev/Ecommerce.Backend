@@ -81,8 +81,8 @@ namespace Ecommerce.Backend.Entities
 
   public class ShippingAddress : BillingAddress
   {
-    [BsonElement("sameToShippingAddress")]
+    [BsonElement("sameToBillingAddress")]
     [BsonRequired]
-    public bool SameToShippingAddress { get; set; }
+    public bool SameToBillingAddress { get; set; }
   }
 }

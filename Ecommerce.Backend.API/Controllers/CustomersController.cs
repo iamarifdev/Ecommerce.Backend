@@ -123,7 +123,7 @@ namespace Ecommerce.Backend.API.Controllers
       try
       {
         var shippingAddress = _mapper.Map<ShippingAddress>(dto);
-        var updatedCustomer = await _customerService.UpdateBillingAddress(customerId, shippingAddress);
+        var updatedCustomer = await _customerService.UpdateShippingAddress(customerId, shippingAddress);
         return updatedCustomer.CreateSuccessResponse("Customer shipping address updated successfully!");
       }
       catch (Exception exception)

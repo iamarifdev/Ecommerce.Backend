@@ -13,7 +13,7 @@ namespace Ecommerce.Backend.Services.Implementations
       var items = await GetPaginatedList<CustomerListItemDto>(query, customer => new CustomerListItemDto
       {
         ID = customer.ID,
-        FirstName = customer.FirstName,
+          FirstName = customer.FirstName,
           LastName = customer.LastName,
           AvatarUrl = customer.AvatarUrl,
           Email = customer.Email,
@@ -34,7 +34,26 @@ namespace Ecommerce.Backend.Services.Implementations
     public async Task<Customer> UpdateShippingAddress(string customerId, ShippingAddress address)
     {
       var customer = await GetById(customerId);
-      customer.ShippingAddress = address;
+      if (address.SameToBillingAddress)
+      {
+        customer.ShippingAddress = new ShippingAddress
+        {
+          FirstName = customer.BillingAddress.FirstName,
+          LastName = customer.BillingAddress.LastName,
+          Email = customer.BillingAddress.Email,
+          PhoneNo = customer.BillingAddress.PhoneNo,
+          Country = customer.BillingAddress.Country,
+          State = customer.BillingAddress.State,
+          City = customer.BillingAddress.City,
+          Address = customer.BillingAddress.Address,
+          PostalCode = customer.BillingAddress.PostalCode,
+          SameToBillingAddress = true
+        };
+      }
+      else
+      {
+        customer.ShippingAddress = address;
+      }
       var updatedCustomer = await UpdateById(customerId, customer);
       return updatedCustomer;
     }
