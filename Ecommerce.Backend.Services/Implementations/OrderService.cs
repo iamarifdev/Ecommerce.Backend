@@ -8,9 +8,9 @@ namespace Ecommerce.Backend.Services.Implementations
 {
   public class OrderService : BaseService<Order>, IOrderService
   {
-    public async Task<PagedList<Order>> GetPaginatedOrderList(PagedQuery query)
+    public async Task<PagedList<OrderListItemDto>> GetPaginatedOrderList(PagedQuery query)
     {
-      var items = await GetPaginatedList<Order>(query, order => new Order(order.ID, order.Customer));
+      var items = await GetPaginatedList<OrderListItemDto>(query, order => new OrderListItemDto(order));
       return items;
     }
   }

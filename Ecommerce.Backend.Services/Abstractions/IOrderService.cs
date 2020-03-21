@@ -7,6 +7,6 @@ namespace Ecommerce.Backend.Services.Abstractions
 {
   public interface IOrderService : IBaseService<Order>
   {
-    Task<PagedList<Order>> GetPaginatedOrderList(PagedQuery query);
+    Task<PagedList<OrderListItemDto>> GetPaginatedOrderList(PagedQuery query);
   }
 }

@@ -17,23 +17,9 @@ namespace Ecommerce.Backend.Entities
 
   public class Order : BaseEntityWithStatus
   {
-    public Order()
-    {
-        
-    }
-
-    public Order(string id, One<Customer> customer)
-    {
-      ID = id;
-      OrderCustomer = customer.ToEntity();        
-    }
-
     [BsonElement("customer")]
     [BsonRequired]
-    public One<Customer> Customer { get; set; }
-
-    [BsonIgnore]
-    public Customer OrderCustomer {get;set;}
+    public One<Customer> CustomerRef { get; set; }
 
     [BsonElement("orderProducts")]
     [BsonRequired]
@@ -41,11 +27,11 @@ namespace Ecommerce.Backend.Entities
 
     [BsonElement("shippingMethod")]
     [BsonRequired]
-    public One<ShippingMethod> ShippingMethod { get; set; }
+    public One<ShippingMethod> ShippingMethodRef { get; set; }
 
     [BsonElement("paymentMethod")]
     [BsonRequired]
-    public One<PaymentMethod> PaymentMethod { get; set; }
+    public One<PaymentMethod> PaymentMethodRef { get; set; }
 
     [BsonElement("orderStatus")]
     [BsonRequired]
@@ -63,7 +49,7 @@ namespace Ecommerce.Backend.Entities
 
     [BsonElement("product")]
     [BsonRequired]
-    public One<Product> Product { get; set; }
+    public One<Product> ProductRef { get; set; }
 
     [BsonElement("quantity")]
     [BsonRequired]
@@ -95,7 +81,6 @@ namespace Ecommerce.Backend.Entities
     [BsonElement("description")]
     [BsonRequired]
     public string Description { get; set; }
-
 
     [BsonElement("updatedAt")]
     [BsonRequired]

@@ -10,4 +10,8 @@
     <PackageReference Include="System.Text.Json" Version="4.7.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Ecommerce.Backend.Entities\Ecommerce.Backend.Entities.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -27,7 +27,7 @@ namespace Ecommerce.Backend.API.Controllers
     /// Get Pagniated orders
     /// </summary>
     [HttpGet("list")]
-    public async Task<ActionResult<ApiResponse<PagedList<Order>>>> GatPagedOrderList([FromQuery] PagedQuery query)
+    public async Task<ActionResult<ApiResponse<PagedList<OrderListItemDto>>>> GatPagedOrderList([FromQuery] PagedQuery query)
     {
       try
       {
