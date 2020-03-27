@@ -26,6 +26,18 @@ namespace Ecommerce.Backend.Services.Implementations
       return entity;
     }
 
+    public async Task<TEntity> GetByExpression(Expression<Func<TEntity, bool>> expression)
+    {
+      var entity = await _entities.FindAsync<TEntity>(expression).Result.FirstOrDefaultAsync();
+      return entity;
+    }
+
+    public async Task<bool> IsExist(Expression<Func<TEntity, bool>> expression)
+    {
+      var entity = await _entities.FindAsync<TEntity>(expression).Result.FirstOrDefaultAsync();
+      return entity != null;
+    }
+
     public async Task<TEntity> GetById(string id)
     {
       var entity = await _entities.FindAsync<TEntity>(x => x.ID == id).Result.FirstOrDefaultAsync();
