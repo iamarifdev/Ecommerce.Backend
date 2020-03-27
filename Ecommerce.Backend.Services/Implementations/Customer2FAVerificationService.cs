@@ -15,7 +15,7 @@ namespace Ecommerce.Backend.Services.Implementations
       return verficationCode;
     }
 
-    public async Task<bool> CheckVerficationCode(string phoneNo, string verificationCode)
+    public async Task<bool> IsVerificationCodeExist(string phoneNo, string verificationCode)
     {
       var isExist = await IsExist(code =>
         code.PhoneNo == phoneNo &&
@@ -25,6 +25,18 @@ namespace Ecommerce.Backend.Services.Implementations
         !code.IsDeleted
       );
       return isExist;
+    }
+
+    public async Task<bool> IsVerified(string phoneNo, string verificationCode)
+    {
+      var verified = await IsExist(code =>
+        code.PhoneNo == phoneNo &&
+        code.VerficationCode == verificationCode &&
+        code.IsVerified &&
+        code.IsEnabled &&
+        !code.IsDeleted
+      );
+      return verified;
     }
 
     public async Task<bool> VerifyCode(string phoneNo, string verificationCode)

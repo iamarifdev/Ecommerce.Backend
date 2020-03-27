@@ -17,10 +17,12 @@ namespace Ecommerce.Backend.API.Controllers
   {
     private readonly IMapper _mapper;
     private readonly ICustomerService _customerService;
-    public CustomersController(ICustomerService customerService, IMapper mapper)
+    private readonly ICustomer2FAVerificationService _verificationService;
+    public CustomersController(ICustomerService customerService, ICustomer2FAVerificationService verificationService, IMapper mapper)
     {
       _mapper = mapper;
       _customerService = customerService;
+      _verificationService = verificationService;
     }
 
     /// <summary>
@@ -66,6 +68,11 @@ namespace Ecommerce.Backend.API.Controllers
     {
       try
       {
+        var isVerified = await _verificationService.VerifyCode(dto.PhoneNo, dto.VerificationCode);
+        if (!isVerified)
+        {
+          throw new Exception("Invalid verification code!");
+        }
         var customer = _mapper.Map<Customer>(dto);
         var createdCustomer = await _customerService.Add(customer);
         return createdCustomer.CreateSuccessResponse("Customer created successfully!");

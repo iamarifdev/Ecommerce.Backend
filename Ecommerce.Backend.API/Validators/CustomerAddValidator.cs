@@ -7,14 +7,9 @@ namespace Ecommerce.Backend.API.Validators
   {
     public CustomerAddValidator()
     {
-      RuleFor(r => r.PhoneNo)
-        .NotEmpty()
-        .When(w => string.IsNullOrWhiteSpace(w.Email))
-        .Matches(@"^01[3456789][0-9]{8}$");
-      RuleFor(r => r.Email)
-        .NotEmpty()
-        .When(w => string.IsNullOrWhiteSpace(w.PhoneNo))
-        .EmailAddress();
+      RuleFor(r => r.PhoneNo).NotEmpty().Matches(@"^01[3456789][0-9]{8}$");
+      RuleFor(r => r.VerificationCode).NotEmpty().Length(6,6);
+      RuleFor(r => r.Email).EmailAddress();
     }
   }
 }

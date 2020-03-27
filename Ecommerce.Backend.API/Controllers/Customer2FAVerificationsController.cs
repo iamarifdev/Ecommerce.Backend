@@ -97,7 +97,7 @@ namespace Ecommerce.Backend.API.Controllers
         {
           throw new Exception("Invalid phone number!");
         }
-        var isExist = await _verificationService.CheckVerficationCode(dto.PhoneNo, dto.VerificationCode);
+        var isExist = await _verificationService.IsVerificationCodeExist(dto.PhoneNo, dto.VerificationCode);
         if (!isExist)
         {
           throw new Exception("Invalid verification code!");
