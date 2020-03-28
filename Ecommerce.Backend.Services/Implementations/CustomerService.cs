@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ecommerce.Backend.Common.DTO;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
+using MongoDB.Bson;
 
 namespace Ecommerce.Backend.Services.Implementations
 {
@@ -56,6 +58,13 @@ namespace Ecommerce.Backend.Services.Implementations
       }
       var updatedCustomer = await UpdateById(customerId, customer);
       return updatedCustomer;
+    }
+
+    public async Task<bool> ValidateIdentity(Dictionary<string, string> keyValues)
+    {
+      var conditions = keyValues.ToBsonDocument();
+      var isExist = await IsExist(conditions);
+      return !isExist;
     }
   }
 }

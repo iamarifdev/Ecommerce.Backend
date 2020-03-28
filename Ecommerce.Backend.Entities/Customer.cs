@@ -5,7 +5,7 @@ namespace Ecommerce.Backend.Entities
   public class Customer : BaseEntityWithStatus
   {
     [BsonElement("phoneNo")]
-    [BsonIgnoreIfNull]
+    [BsonRequired]
     public string PhoneNo { get; set; }
 
     [BsonElement("email")]

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Ecommerce.Backend.API.Helpers;
@@ -53,6 +54,24 @@ namespace Ecommerce.Backend.API.Controllers
       {
         var customer = await _customerService.GetById(customerId);
         return customer.CreateSuccessResponse();
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
+    /// Validate identity of a customer
+    /// </summary>
+    [HttpPost("validate/identity")]
+    public async Task<ActionResult<ApiResponse<IdentityDto>>> ValidateIdentity(Dictionary<string, string> keyValues)
+    {
+      try
+      {
+        var isValid = await _customerService.ValidateIdentity(keyValues);
+        var identiy = new IdentityDto { IsValid = isValid };
+        return identiy.CreateSuccessResponse("Customer validated successfully!");
       }
       catch (Exception exception)
       {

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ecommerce.Backend.Common.DTO;
 using Ecommerce.Backend.Common.Models;
@@ -10,5 +11,6 @@ namespace Ecommerce.Backend.Services.Abstractions
     Task<PagedList<CustomerListItemDto>> GetPaginatedCustomerList(PagedQuery query);
     Task<Customer> UpdateBillingAddress(string customerId, BillingAddress address);
     Task<Customer> UpdateShippingAddress(string customerId, ShippingAddress address);
+    Task<bool> ValidateIdentity(Dictionary<string, string> keyValues);
   }
 }

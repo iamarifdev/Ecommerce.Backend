@@ -38,6 +38,12 @@ namespace Ecommerce.Backend.Services.Implementations
       return entity != null;
     }
 
+    public async Task<bool> IsExist(BsonDocument condition)
+    {
+      var entity = await _entities.FindAsync<TEntity>(condition).Result.FirstOrDefaultAsync();
+      return entity != null;
+    }
+
     public async Task<TEntity> GetById(string id)
     {
       var entity = await _entities.FindAsync<TEntity>(x => x.ID == id).Result.FirstOrDefaultAsync();
