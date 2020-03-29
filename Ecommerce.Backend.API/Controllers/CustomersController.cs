@@ -16,7 +16,6 @@ namespace Ecommerce.Backend.API.Controllers
   [Produces("application/json")]
   [Route("api/customers")]
   [ApiController]
-
   public class CustomersController : ControllerBase
   {
     private readonly IMapper _mapper;

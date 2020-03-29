@@ -15,7 +15,6 @@ namespace Ecommerce.Backend.API.Controllers
   [Produces("application/json")]
   [Route("api/shipping-methods")]
   [ApiController]
-
   public class ShippingMethodsController : ControllerBase
   {
     private readonly IMapper _mapper;

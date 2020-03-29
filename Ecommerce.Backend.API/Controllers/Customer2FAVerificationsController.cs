@@ -15,7 +15,6 @@ namespace Ecommerce.Backend.API.Controllers
   [Produces("application/json")]
   [Route("api/customer/verifications")]
   [ApiController]
-
   public class Customer2FAVerificationsController : ControllerBase
   {
     private readonly IMapper _mapper;

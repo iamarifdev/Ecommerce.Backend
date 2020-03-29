@@ -15,7 +15,6 @@ namespace Ecommerce.Backend.API.Controllers
   [Produces("application/json")]
   [Route("api/payment-methods")]
   [ApiController]
-
   public class PaymentMethodsController : ControllerBase
   {
     private readonly IMapper _mapper;
