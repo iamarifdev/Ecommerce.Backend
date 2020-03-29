@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Ecommerce.Backend.API
 {
+  #pragma warning disable CS1591
+  #pragma warning disable CS1573
   public class Program
   {
     public static void Main(string[] args)
@@ -23,4 +25,6 @@ namespace Ecommerce.Backend.API
         webBuilder.UseStartup<Startup>();
       });
   }
+  #pragma warning restore CS1591
+  #pragma warning disable CS1573
 }

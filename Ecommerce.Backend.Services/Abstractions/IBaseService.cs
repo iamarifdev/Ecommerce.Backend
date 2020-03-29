@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace Ecommerce.Backend.Services.Abstractions
 {

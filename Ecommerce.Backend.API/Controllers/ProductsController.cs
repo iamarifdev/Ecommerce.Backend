@@ -11,9 +11,12 @@ using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Ecommerce.Backend.API.Controllers
 {
+  [SwaggerTag("Products")]
+  [Produces("application/json")]
   [Route("api/products")]
   [ApiController]
   public class ProductsController : ControllerBase
@@ -160,9 +163,10 @@ namespace Ecommerce.Backend.API.Controllers
     }
 
     /// <summary>
-    /// Product feature image upload
+    /// Product color images upload
     /// </summary>
     /// <param name="productId"></param>
+    /// <param name="color"></param>
     [HttpPost("{productId}/upload/images/{color}")]
     public async Task<ActionResult<ApiResponse<List<string>>>> UploadImages(string productId, string color, List<IFormFile> images)
     {

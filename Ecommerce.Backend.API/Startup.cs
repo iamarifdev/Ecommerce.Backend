@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using AutoMapper;
 using Ecommerce.Backend.API.AutoMappingProfiles;
@@ -128,6 +131,11 @@ namespace Ecommerce.Backend.API
             new List<string>()
           }
         });
+        config.EnableAnnotations();
+         // Set the comments path for the Swagger JSON and UI.
+        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        config.IncludeXmlComments(xmlPath);
         // c.CustomSchemaIds(x => x.FullName);
       });
     }

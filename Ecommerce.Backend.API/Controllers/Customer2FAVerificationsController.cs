@@ -7,9 +7,12 @@ using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Ecommerce.Backend.API.Controllers
 {
+  [SwaggerTag("Customer 2FA Verfications")]
+  [Produces("application/json")]
   [Route("api/customer/verifications")]
   [ApiController]
 
@@ -72,8 +75,8 @@ namespace Ecommerce.Backend.API.Controllers
           new Customer2FAVerification
           {
             PhoneNo = dto.PhoneNo,
-            VerficationCode = verificationCode,
-            ExpiresAt = DateTime.Now.AddMinutes(5)
+              VerficationCode = verificationCode,
+              ExpiresAt = DateTime.Now.AddMinutes(5)
           }
         );
         return createdCustomer2FAVerification.PhoneNo.CreateSuccessResponse("Verfication code created successfully!");

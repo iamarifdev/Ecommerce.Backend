@@ -8,9 +8,12 @@ using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Ecommerce.Backend.API.Controllers
 {
+  [SwaggerTag("Customers")]
+  [Produces("application/json")]
   [Route("api/customers")]
   [ApiController]
 
