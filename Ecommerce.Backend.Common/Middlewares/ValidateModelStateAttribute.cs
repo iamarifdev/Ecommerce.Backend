@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Ecommerce.Backend.API.Helpers;
+using Ecommerce.Backend.Common.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

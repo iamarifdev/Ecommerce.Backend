@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using Ecommerce.Backend.API.Helpers;
+using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Common.DTO;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;

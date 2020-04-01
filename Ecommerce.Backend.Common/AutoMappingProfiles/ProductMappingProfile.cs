@@ -2,7 +2,7 @@ using AutoMapper;
 using Ecommerce.Backend.Common.DTO;
 using Ecommerce.Backend.Entities;
 
-namespace Ecommerce.Backend.API.AutoMappingProfiles
+namespace Ecommerce.Backend.Common.AutoMappingProfiles
 {
   public class ProductMappingProfile : Profile
   {

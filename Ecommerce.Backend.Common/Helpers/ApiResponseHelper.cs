@@ -4,7 +4,7 @@ using System.Linq;
 using Ecommerce.Backend.Common.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Ecommerce.Backend.API.Helpers
+namespace Ecommerce.Backend.Common.Helpers
 {
   public static class ApiResponseHelper
   {

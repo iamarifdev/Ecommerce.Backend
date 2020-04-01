@@ -1,11 +1,11 @@
 using Ecommerce.Backend.Common.DTO;
 using FluentValidation;
 
-namespace Ecommerce.Backend.API.Validators
+namespace Ecommerce.Backend.Common.Validators
 {
-  public class ProductAddValidator : AbstractValidator<ProductAddDto>
+  public class ProductUpdateValidator : AbstractValidator<ProductUpdateDto>
   {
-    public ProductAddValidator()
+    public ProductUpdateValidator()
     {
       RuleFor(r => r.SKU).NotEmpty();
       RuleFor(r => r.Title).NotEmpty();
@@ -15,6 +15,7 @@ namespace Ecommerce.Backend.API.Validators
       RuleFor(r => r.Pricing).NotEmpty();
       RuleFor(r => r.Pricing.Price).NotEmpty().When(w => w.Pricing != null).GreaterThan(0);
       RuleFor(r => r.ProductColors).NotEmpty();
+      RuleFor(r => r.FeatureImageUrl).NotEmpty().When(w => w.FeatureImageUrl != null);
       RuleForEach(rf => rf.ProductColors).SetValidator(new ProductColorValidator());
     }
   }
