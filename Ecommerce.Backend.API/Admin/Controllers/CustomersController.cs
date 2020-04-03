@@ -10,11 +10,11 @@ using Ecommerce.Backend.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Ecommerce.Backend.API.Controllers
+namespace Ecommerce.Backend.API.Admin.Controllers
 {
-  [SwaggerTag("Customers")]
+  [SwaggerTag("Admin Customers")]
   [Produces("application/json")]
-  [Route("api/customers")]
+  [Route("admin/api/customers")]
   [ApiController]
   public class CustomersController : ControllerBase
   {
@@ -26,6 +26,23 @@ namespace Ecommerce.Backend.API.Controllers
       _mapper = mapper;
       _customerService = customerService;
       _verificationService = verificationService;
+    }
+
+    /// <summary>
+    /// Get Pagniated customers
+    /// </summary>
+    [HttpGet("list")]
+    public async Task<ActionResult<ApiResponse<PagedList<CustomerListItemDto>>>> GatPagedList([FromQuery] PagedQuery query)
+    {
+      try
+      {
+        var pagedCustomerList = await _customerService.GetPaginatedCustomerList(query);
+        return pagedCustomerList.CreateSuccessResponse();
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
     }
 
     /// <summary>
@@ -88,6 +105,24 @@ namespace Ecommerce.Backend.API.Controllers
     }
 
     /// <summary>
+    /// Update a customer by Id
+    /// </summary>
+    /// <param name="customerId"></param>
+    [HttpPut("update/{customerId}")]
+    public async Task<ActionResult<ApiResponse<Customer>>> Update(string customerId, Customer customer)
+    {
+      try
+      {
+        var updatedCustomer = await _customerService.UpdateById(customerId, customer);
+        return updatedCustomer.CreateSuccessResponse("Customer updated successfully!");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
     /// Update customer billing address by Id
     /// </summary>
     /// <param name="customerId"></param>
@@ -118,6 +153,43 @@ namespace Ecommerce.Backend.API.Controllers
         var shippingAddress = _mapper.Map<ShippingAddress>(dto);
         var updatedCustomer = await _customerService.UpdateShippingAddress(customerId, shippingAddress);
         return updatedCustomer.CreateSuccessResponse("Customer shipping address updated successfully!");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
+    /// Activate a customer by Id
+    /// </summary>
+    /// <param name="customerId"></param>
+    [HttpPut("activate/{customerId}")]
+    public async Task<ActionResult<ApiResponse<Customer>>> ToggleActivation(string customerId, ActivateDto activateDto)
+    {
+      try
+      {
+        var updatedCustomer = await _customerService.ToggleActivationById(customerId, activateDto.Status);
+        var status = activateDto.Status ? "activated" : "deactivated";
+        return updatedCustomer.CreateSuccessResponse($"Customer {status} successfully!");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
+    /// Delete a customer by Id
+    /// </summary>
+    /// <param name="customerId"></param>
+    [HttpDelete("delete/{customerId}")]
+    public async Task<ActionResult<ApiResponse<Customer>>> Delete(string customerId)
+    {
+      try
+      {
+        var deletedCustomer = await _customerService.RemoveById(customerId);
+        return deletedCustomer.CreateSuccessResponse("Customer deleted successfully!");
       }
       catch (Exception exception)
       {

@@ -9,11 +9,11 @@ using Ecommerce.Backend.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Ecommerce.Backend.API.Controllers
+namespace Ecommerce.Backend.API.Admin.Controllers
 {
-  [SwaggerTag("Orders")]
+  [SwaggerTag("Admin Orders")]
   [Produces("application/json")]
-  [Route("api/orders")]
+  [Route("admin/api/orders")]
   [ApiController]
   public class OrdersController : ControllerBase
   {
@@ -33,7 +33,6 @@ namespace Ecommerce.Backend.API.Controllers
     {
       try
       {
-        // TODO: filter with customer ID to get only specific customer orders
         var pagedOrderList = await _orderService.GetPaginatedOrderList(query);
         return pagedOrderList.CreateSuccessResponse();
       }
@@ -90,6 +89,43 @@ namespace Ecommerce.Backend.API.Controllers
       {
         var updatedOrder = await _orderService.UpdateById(orderId, order);
         return updatedOrder.CreateSuccessResponse("Order updated successfully!");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
+    /// Activate a order by Id
+    /// </summary>
+    /// <param name="orderId"></param>
+    [HttpPut("activate/{orderId}")]
+    public async Task<ActionResult<ApiResponse<Order>>> ToggleActivation(string orderId, ActivateDto activateDto)
+    {
+      try
+      {
+        var updatedOrder = await _orderService.ToggleActivationById(orderId, activateDto.Status);
+        var status = activateDto.Status ? "activated" : "deactivated";
+        return updatedOrder.CreateSuccessResponse($"Order {status} successfully!");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
+    /// Delete a order by Id
+    /// </summary>
+    /// <param name="orderId"></param>
+    [HttpDelete("delete/{orderId}")]
+    public async Task<ActionResult<ApiResponse<Order>>> Delete(string orderId)
+    {
+      try
+      {
+        var deletedOrder = await _orderService.RemoveById(orderId);
+        return deletedOrder.CreateSuccessResponse("Order deleted successfully!");
       }
       catch (Exception exception)
       {

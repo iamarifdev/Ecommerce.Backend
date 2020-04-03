@@ -9,11 +9,11 @@ using Ecommerce.Backend.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Ecommerce.Backend.API.Controllers
+namespace Ecommerce.Backend.API.Admin.Controllers
 {
-  [SwaggerTag("Customer 2FA Verfications")]
+  [SwaggerTag("Admin Customer 2FA Verfications")]
   [Produces("application/json")]
-  [Route("api/customer/verifications")]
+  [Route("admin/api/customer/verifications")]
   [ApiController]
   public class Customer2FAVerificationsController : ControllerBase
   {
@@ -23,6 +23,41 @@ namespace Ecommerce.Backend.API.Controllers
     {
       _mapper = mapper;
       _verificationService = verificationService;
+    }
+
+    /// <summary>
+    /// Get Pagniated customer 2FA verifications
+    /// </summary>
+    [HttpGet("list")]
+    public async Task<ActionResult<ApiResponse<PagedList<Customer2FAVerification>>>> GatPagedCustomer2FAVerificationList([FromQuery] PagedQuery query)
+    {
+      try
+      {
+        var pagedCustomer2FAVerificationList = await _verificationService.GetPaginatedList(query);
+        return pagedCustomer2FAVerificationList.CreateSuccessResponse();
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
+    /// Get customer 2FA verification by Id
+    /// </summary>
+    /// <param name="verificationId"></param>
+    [HttpGet("{verificationId}")]
+    public async Task<ActionResult<ApiResponse<Customer2FAVerification>>> Get(String verificationId)
+    {
+      try
+      {
+        var customer2FAverification = await _verificationService.GetById(verificationId);
+        return customer2FAverification.CreateSuccessResponse();
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
     }
 
     /// <summary>
@@ -71,6 +106,24 @@ namespace Ecommerce.Backend.API.Controllers
         }
         var verified = await _verificationService.VerifyCode(dto.PhoneNo, dto.VerificationCode);
         return verified.CreateSuccessResponse("Phone number verified with verification code successfully!");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
+    /// Delete a customer 2FA verification by Id
+    /// </summary>
+    /// <param name="verificationId"></param>
+    [HttpDelete("delete/{verificationId}")]
+    public async Task<ActionResult<ApiResponse<Customer2FAVerification>>> Delete(string verificationId)
+    {
+      try
+      {
+        var deletedCustomer2FAVerification = await _verificationService.RemoveById(verificationId);
+        return deletedCustomer2FAVerification.CreateSuccessResponse("Verfication code deleted successfully!");
       }
       catch (Exception exception)
       {

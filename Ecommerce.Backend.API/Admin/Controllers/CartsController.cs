@@ -9,11 +9,11 @@ using Ecommerce.Backend.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Ecommerce.Backend.API.Controllers
+namespace Ecommerce.Backend.API.Admin.Controllers
 {
-  [SwaggerTag("Carts")]
+  [SwaggerTag("Admin Carts")]
   [Produces("application/json")]
-  [Route("api/carts")]
+  [Route("admin/api/carts")]
   [ApiController]
   public class CartsController : ControllerBase
   {
@@ -23,6 +23,23 @@ namespace Ecommerce.Backend.API.Controllers
     {
       _mapper = mapper;
       _cartService = cartService;
+    }
+
+    /// <summary>
+    /// Get Pagniated Carts
+    /// </summary>
+    [HttpGet("list")]
+    public async Task<ActionResult<ApiResponse<PagedList<Cart>>>> GatPagedProductList([FromQuery] PagedQuery query)
+    {
+      try
+      {
+        var pagedCartList = await _cartService.GetPaginatedCarts(query);
+        return pagedCartList.CreateSuccessResponse();
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
     }
 
     /// <summary>
