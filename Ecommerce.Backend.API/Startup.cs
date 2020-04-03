@@ -52,6 +52,8 @@ namespace Ecommerce.Backend.API
 
       // add services here
       services.AddScoped<EcommerceHttpClient>();
+      services.AddScoped<IRoleService, RoleService>();
+      services.AddScoped<IUserService, UserService>();
       services.AddScoped<IProductService, ProductService>();
       services.AddScoped<ICartService, CartService>();
       services.AddScoped<IShippingMethodService, ShippingMethodService>();
