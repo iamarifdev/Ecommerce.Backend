@@ -1,4 +1,6 @@
-##### To migrate the SqliteDb for UserLogins
+##### Must run it from Ecommerce.Backend.Entities Project
+Example: 
+  Ecommerce.Backend.Entities>> dotnet ef migrations ...
 
   dotnet ef migrations add CreateTokenStoreDb --startup-project ../Ecommerce.Backend.API/Ecommerce.Backend.API.csproj
   dotnet ef database update --startup-project ../Ecommerce.Backend.API/Ecommerce.Backend.API.csproj
