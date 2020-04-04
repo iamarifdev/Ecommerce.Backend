@@ -9,6 +9,7 @@ using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -17,6 +18,7 @@ namespace Ecommerce.Backend.API.Admin.Controllers
 {
   [SwaggerTag("Admin Users")]
   [Produces("application/json")]
+  [Authorize]
   [Route("admin/api/users")]
   [ApiController]
   public class UsersController : ControllerBase

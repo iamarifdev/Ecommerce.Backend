@@ -5,24 +5,26 @@ using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
 using Ecommerce.Backend.Services.Implementations;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MongoDB.Entities;
 
 namespace Ecommerce.Backend.API.Helpers
 {
   public static class Extensions
   {
-    // public static IWebHost MigrateDatabase<T>(this IWebHost webHost) where T : DbContext
-    // {
-    //   var serviceScopeFactory = (IServiceScopeFactory) webHost.Services.GetService(typeof(IServiceScopeFactory));
-    //   using(var scope = serviceScopeFactory.CreateScope())
-    //   {
-    //     var services = scope.ServiceProvider;
-    //     var dbContext = services.GetRequiredService<T>();
-    //     dbContext.Database.Migrate();
-    //   }
-    //   return webHost;
-    // }
+    public static IHost MigrateDatabase<T>(this IHost webHost) where T : DbContext
+    {
+      var serviceScopeFactory = (IServiceScopeFactory) webHost.Services.GetService(typeof(IServiceScopeFactory));
+      using(var scope = serviceScopeFactory.CreateScope())
+      {
+        var services = scope.ServiceProvider;
+        var dbContext = services.GetRequiredService<T>();
+        dbContext.Database.Migrate();
+      }
+      return webHost;
+    }
 
     public static IServiceCollection InitiateDbConnection(this IServiceCollection services, IDatabaseSetting dbSetting)
     {
@@ -54,6 +56,7 @@ namespace Ecommerce.Backend.API.Helpers
     public static IServiceCollection RegisterAPIServices(this IServiceCollection services)
     {
       services.AddScoped<EcommerceHttpClient>();
+      services.AddScoped<IAuthService, AuthService>();
       services.AddScoped<IRoleService, RoleService>();
       services.AddScoped<IUserService, UserService>();
       services.AddScoped<IProductService, ProductService>();
@@ -68,6 +71,24 @@ namespace Ecommerce.Backend.API.Helpers
 
     public static IServiceCollection RegisterAllDBIndex(this IServiceCollection services)
     {
+      // Customer Index
+      DB.Index<Role>()
+        .Key(x => x.Name, KeyType.Ascending)
+        .Option(o => o.Unique = true)
+        .Create();
+
+      // Customer Index
+      DB.Index<User>()
+        .Key(x => x.Username, KeyType.Ascending)
+        .Option(o => o.Unique = true)
+        .Create();
+
+      // Customer Index
+      DB.Index<User>()
+        .Key(x => x.Email, KeyType.Ascending)
+        .Option(o => o.Unique = true)
+        .Create();
+
       // Product Index
       DB.Index<Product>()
         .Key(x => x.Title, KeyType.Ascending)

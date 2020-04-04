@@ -2,20 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using Ecommerce.Backend.API.Helpers;
 using Ecommerce.Backend.API.Middlewares;
 using Ecommerce.Backend.API.Validators;
 using Ecommerce.Backend.Common.Configurations;
+using Ecommerce.Backend.Entities;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace Ecommerce.Backend.API
@@ -50,7 +56,7 @@ namespace Ecommerce.Backend.API
       services.AddCors();
       services.AddControllers();
       services.AddResponseCompression();
-      // services.AddDbContext<TokenStoreDbContext>(options => options.UseSqlite("Filename=./tokenstore.db"));
+      services.AddDbContext<TokenStoreDbContext>(options => options.UseSqlite("Filename=./tokenstore.db"));
 
       services.AddMvc(Options => Options.Filters.Add(new ValidateModelStateAttribute()))
         .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<AddCartProductValidator>())
@@ -61,30 +67,30 @@ namespace Ecommerce.Backend.API
           options.JsonSerializerOptions.IgnoreNullValues = true;
         });
 
-      // services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-      //   .AddJwtBearer(options =>
-      //   {
-      //     options.TokenValidationParameters = new TokenValidationParameters
-      //     {
-      //     ValidateIssuerSigningKey = true,
-      //     IssuerSigningKey = new SymmetricSecurityKey(
-      //     Encoding.UTF8.GetBytes(
-      //     Configuration.GetSection("JwtConfig:AccessTokenSecretKey").Value
-      //     )
-      //     ),
-      //     ValidateAudience = false,
-      //     ValidateIssuer = false,
-      //     RequireExpirationTime = true,
-      //     ValidateLifetime = true
-      //     };
-      //   });
+      services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+          options.TokenValidationParameters = new TokenValidationParameters
+          {
+          ValidateIssuerSigningKey = true,
+          IssuerSigningKey = new SymmetricSecurityKey(
+          Encoding.UTF8.GetBytes(
+          Configuration.GetSection("JwtConfig:AccessTokenSecretKey").Value
+          )
+          ),
+          ValidateAudience = false,
+          ValidateIssuer = false,
+          RequireExpirationTime = true,
+          ValidateLifetime = true
+          };
+        });
 
-      // services.AddAuthorization(options =>
-      // {
-      //   var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme);
-      //   defaultAuthorizationPolicyBuilder = defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
-      //   options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
-      // });
+      services.AddAuthorization(options =>
+      {
+        var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme);
+        defaultAuthorizationPolicyBuilder = defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+        options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+      });
 
       services.AddSwaggerGen(config =>
       {
@@ -113,7 +119,7 @@ namespace Ecommerce.Backend.API
           }
         });
         config.EnableAnnotations();
-         // Set the comments path for the Swagger JSON and UI.
+        // Set the comments path for the Swagger JSON and UI.
         var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
         config.IncludeXmlComments(xmlPath);
@@ -138,16 +144,10 @@ namespace Ecommerce.Backend.API
       }
       app.UseHttpsRedirection();
       app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-      // app.UseStaticFiles();
-      // app.UseStaticFiles(new StaticFileOptions()
-      // {
-      //   FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"uploads")),
-      //     RequestPath = new PathString("/assets")
-      // });
       app.UseRouting();
       app.UseResponseCompression();
-      // app.UseAuthentication();
-      // app.UseAuthorization();
+      app.UseAuthentication();
+      app.UseAuthorization();
       app.UseSwagger();
       app.UseSwaggerUI(config =>
       {

@@ -16,7 +16,7 @@ using MongoDB.Entities;
 
 namespace Ecommerce.Backend.Services.Implementations
 {
-  public class AuthService
+  public class AuthService: IAuthService
   {
     private readonly TokenStoreDbContext _dbContext;
     private readonly IUserService _userService;
@@ -36,19 +36,20 @@ namespace Ecommerce.Backend.Services.Implementations
       _jwtConfig = jwtConfig;
     }
 
-    private string GenerateToken(User user, int days, string secretKey)
+    private string GenerateToken(User user, double minutes, string secretKey)
     {
       var claims = new Claim[]
       {
         new Claim(ClaimTypes.NameIdentifier, user.ID),
-        new Claim(ClaimTypes.Name, user.Username)
+        new Claim(ClaimTypes.Name, user.Username),
+        new Claim(ClaimTypes.Role, user.RoleRef.ID)
       };
       var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
       var signingcredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512Signature);
       var tokenDescriptor = new SecurityTokenDescriptor
       {
         Subject = new ClaimsIdentity(claims),
-        Expires = DateTime.Now.AddDays(days),
+        Expires = DateTime.Now.AddMinutes(minutes),
         SigningCredentials = signingcredentials
       };
       var tokenHandler = new JwtSecurityTokenHandler();
@@ -84,7 +85,7 @@ namespace Ecommerce.Backend.Services.Implementations
       return (false, 0);
     }
 
-    public async Task < (Role, User) > SeedDatabase()
+    public async Task <(Role, User)> SeedDatabase()
     {
       using(var transaction = new Transaction())
       {
@@ -101,33 +102,33 @@ namespace Ecommerce.Backend.Services.Implementations
             role = await _roleService.Add(new Role
             {
               Name = rolename,
-                Description = "A superadmin user with all previledge"
+              Description = "A superadmin user with all previledge"
             });
 
             var newUser = new User
             {
               FullName = "Ariful Islam",
               Username = username,
-              Password = "123456",
+              RoleRef = new One<Role> { ID = role.ID },
+              Password = "Admin123456$",
               Email = "arifjmamun24@gmail.com",
               Remarks = "A superadmin user",
               Addresses = new List<UserAddress>
               {
-              new UserAddress
-              {
-              Description = "Charshapmari, Shapmari",
-              District = "Sherpur",
-              Thana = "Sherpur",
-              PostCode = "2100"
-              }
+                new UserAddress
+                {
+                  Description = "Charshapmari, Shapmari",
+                  District = "Sherpur",
+                  Thana = "Sherpur",
+                  PostCode = "2100"
+                }
               },
               PhoneNumbers = new List<UserPhoneNumber>
               {
-              new UserPhoneNumber { PhoneNo = "01793574440" }
+                new UserPhoneNumber { PhoneNo = "01793574440" }
               }
             };
-            newUser.RoleRef.ID = role.ID;
-            user = await _userService.Add(newUser);
+            user = await _userService.AddUser(newUser);
             await transaction.CommitAsync();
             return (role, user);
           }
@@ -233,7 +234,7 @@ namespace Ecommerce.Backend.Services.Implementations
       return RevokeRefreshToken(user.ID, refreshToken);
     }
 
-    public async Task < (bool, int) > LogOutFromAllDevice(string username, string refreshToken)
+    public async Task <(bool, int)> LogOutFromAllDevice(string username, string refreshToken)
     {
       var countLoggedInDevice = 0;
       var user = await _userService.GetByExpression(u => u.Username.ToLower() == username.ToLower());
