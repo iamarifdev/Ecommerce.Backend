@@ -187,22 +187,5 @@ namespace Ecommerce.Backend.API.Admin.Controllers
         return BadRequest(exception.CreateErrorResponse());
       }
     }
-
-    // /// <summary>
-    // /// Product validation
-    // /// </summary>
-    // [HttpPost("validation")]
-    // public async Task<ActionResult<ApiResponse<IdentityDto>>> ValidateProduct(Dictionary<string, string> keyValues)
-    // {
-    //     try
-    //     {
-    //         var identity = await _productService.CheckProductAvailibility(keyValues);
-    //         return identity.CreateSuccessResponse();
-    //     }
-    //     catch (Exception exception)
-    //     {
-    //         return BadRequest(exception.CreateErrorResponse());
-    //     }
-    // }
   }
 }

@@ -1,5 +1,10 @@
+using AutoMapper;
+using Ecommerce.Backend.API.AutoMappingProfiles;
 using Ecommerce.Backend.Common.Configurations;
+using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Entities;
+using Ecommerce.Backend.Services.Abstractions;
+using Ecommerce.Backend.Services.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Entities;
 
@@ -34,7 +39,34 @@ namespace Ecommerce.Backend.API.Helpers
       return services;
     }
 
-    public static IServiceCollection RegisterAllIndex(this IServiceCollection services)
+    public static IServiceCollection RegisterAutoMappingProfiles(this IServiceCollection services)
+    {
+      services.AddAutoMapper(config => config.AddProfile(new RoleMappingProfile()), typeof(Startup));
+      services.AddAutoMapper(config => config.AddProfile(new UserMappingProfile()), typeof(Startup));
+      services.AddAutoMapper(config => config.AddProfile(new ProductMappingProfile()), typeof(Startup));
+      services.AddAutoMapper(config => config.AddProfile(new CartMappingProfile()), typeof(Startup));
+      services.AddAutoMapper(config => config.AddProfile(new ShippingMethodMappingProfile()), typeof(Startup));
+      services.AddAutoMapper(config => config.AddProfile(new PaymentMethodMappingProfile()), typeof(Startup));
+      services.AddAutoMapper(config => config.AddProfile(new CustomerMappingProfile()), typeof(Startup));
+      return services;
+    }
+
+    public static IServiceCollection RegisterAPIServices(this IServiceCollection services)
+    {
+      services.AddScoped<EcommerceHttpClient>();
+      services.AddScoped<IRoleService, RoleService>();
+      services.AddScoped<IUserService, UserService>();
+      services.AddScoped<IProductService, ProductService>();
+      services.AddScoped<ICartService, CartService>();
+      services.AddScoped<IShippingMethodService, ShippingMethodService>();
+      services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+      services.AddScoped<ICustomerService, CustomerService>();
+      services.AddScoped<IOrderService, OrderService>();
+      services.AddScoped<ICustomer2FAVerificationService, Customer2FAVerificationService>();
+      return services;
+    }
+
+    public static IServiceCollection RegisterAllDBIndex(this IServiceCollection services)
     {
       // Product Index
       DB.Index<Product>()
@@ -45,7 +77,7 @@ namespace Ecommerce.Backend.API.Helpers
         .Key(x => x.SKU, KeyType.Ascending)
         .Option(o => o.Unique = true)
         .Create();
-      
+
       // Customer Index
       DB.Index<Customer>()
         .Key(x => x.PhoneNo, KeyType.Descending)

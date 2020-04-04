@@ -6,13 +6,13 @@ using MongoDB.Entities;
 
 namespace Ecommerce.Backend.Entities
 {
-  public class PhoneNumber
+  public class UserPhoneNumber
   {
     [BsonElement("phoneNo")]
     [BsonRequired]
     public string PhoneNo { get; set; }
   }
-  public class Address
+  public class UserAddress
   {
     [BsonElement("district")]
     [BsonRequired]
@@ -32,10 +32,7 @@ namespace Ecommerce.Backend.Entities
   }
   public class User : BaseEntityWithStatus
   {
-
-    [BsonIgnoreIfNull]
-    [BsonElement("companyId")]
-    public string CompanyId { get; set; }
+    public User() : base(new BaseEntityWithStatus { IsEnabled = false }) { }
 
     [BsonElement("roleRef")]
     [BsonRequired]
@@ -47,12 +44,12 @@ namespace Ecommerce.Backend.Entities
 
     [JsonIgnore]
     [BsonElement("password")]
-    [BsonRequired]
+    [BsonIgnoreIfNull]
     public string Password { get; set; }
 
     [JsonIgnore]
     [BsonElement("salt")]
-    [BsonRequired]
+    [BsonIgnoreIfNull]
     public string Salt { get; set; }
 
     [JsonIgnore]
@@ -76,7 +73,7 @@ namespace Ecommerce.Backend.Entities
 
     [BsonElement("phoneNumbers")]
     [BsonRequired]
-    public IEnumerable<PhoneNumber> PhoneNumbers { get; set; }
+    public IEnumerable<UserPhoneNumber> PhoneNumbers { get; set; }
 
     [BsonIgnoreIfNull]
     [BsonElement("contactPerson")]
@@ -88,10 +85,10 @@ namespace Ecommerce.Backend.Entities
 
     [BsonElement("addresses")]
     [BsonRequired]
-    public IEnumerable<Address> Addresses { get; set; }
+    public IEnumerable<UserAddress> Addresses { get; set; }
 
     [BsonElement("remarks")]
-    [BsonRequired]
+    [BsonIgnoreIfNull]
     public string Remarks { get; set; }
 
     [BsonIgnoreIfNull]

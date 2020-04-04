@@ -59,12 +59,5 @@ namespace Ecommerce.Backend.Services.Implementations
       var updatedCustomer = await UpdateById(customerId, customer);
       return updatedCustomer;
     }
-
-    public async Task<bool> ValidateIdentity(Dictionary<string, string> keyValues)
-    {
-      var conditions = keyValues.ToBsonDocument();
-      var isExist = await IsExist(conditions);
-      return !isExist;
-    }
   }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Ecommerce.Backend.Common.DTO
 {
-  public class UserAddDto
+  public class UserUpdateDto
   {
     public string RoleId { get; set; }
     public string Username { get; set; }
@@ -13,5 +13,6 @@ namespace Ecommerce.Backend.Common.DTO
     public string ContactNo { get; set; }
     public IEnumerable<UserAddressDto> Addresses { get; set; }
     public string Remarks { get; set; }
+    public bool IsEnabled { get; set; } = true;
   }
 }

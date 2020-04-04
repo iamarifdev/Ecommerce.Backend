@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Ecommerce.Backend.Common.Helpers;
@@ -18,6 +19,13 @@ namespace Ecommerce.Backend.Services.Implementations
     public BaseService()
     {
       _entities = DB.Collection<TEntity>();
+    }
+
+    public async Task<bool> ValidateIdentity(Dictionary<string, string> keyValues)
+    {
+      var conditions = keyValues.ToBsonDocument();
+      var isExist = await IsExist(conditions);
+      return !isExist;
     }
 
     public async Task<TEntity> Add(TEntity entity)
@@ -107,6 +115,12 @@ namespace Ecommerce.Backend.Services.Implementations
         .Set(s => s.IsEnabled, status)
         .Set(s => s.UpdatedAt, DateTime.Now);
       var updatedEntity = await _entities.FindOneAndUpdateAsync<TEntity>(x => x.ID == id, update, _options);
+      return updatedEntity;
+    }
+
+    public async Task<TEntity> UpdatePartial(Expression<Func<TEntity, bool>> condition, UpdateDefinition<TEntity> update)
+    {
+      var updatedEntity = await _entities.FindOneAndUpdateAsync(condition, update, _options);
       return updatedEntity;
     }
 

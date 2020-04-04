@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace Ecommerce.Backend.Services.Abstractions
 {
@@ -16,7 +18,9 @@ namespace Ecommerce.Backend.Services.Abstractions
     Task<bool> IsExist(BsonDocument condition);
     Task<TEntity> GetById(string id);
     Task<TDto> GetById<TDto>(string id, Expression<Func<TEntity, TDto>> projection) where TDto: class;
+    Task<bool> ValidateIdentity(Dictionary<string, string> keyValues);
     Task<TEntity> Add(TEntity entity);
+    Task<TEntity> UpdatePartial(Expression<Func<TEntity, bool>> condition, UpdateDefinition<TEntity> update);
     Task<TEntity> UpdateById(string id, TEntity entity);
     Task<TEntity> ToggleActivationById(string id, bool status);
     Task<TEntity> RemoveById(string id);

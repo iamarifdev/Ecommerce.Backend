@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
-using AutoMapper;
-using Ecommerce.Backend.API.AutoMappingProfiles;
 using Ecommerce.Backend.API.Helpers;
 using Ecommerce.Backend.API.Middlewares;
 using Ecommerce.Backend.API.Validators;
 using Ecommerce.Backend.Common.Configurations;
-using Ecommerce.Backend.Common.Helpers;
-using Ecommerce.Backend.Services.Abstractions;
-using Ecommerce.Backend.Services.Implementations;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -48,29 +43,13 @@ namespace Ecommerce.Backend.API
 
       var dbSetting = Configuration.GetSection(nameof(DatabaseSetting)).Get<DatabaseSetting>();
       services.InitiateDbConnection(dbSetting);
-      services.RegisterAllIndex();
-
-      // add services here
-      services.AddScoped<EcommerceHttpClient>();
-      services.AddScoped<IRoleService, RoleService>();
-      services.AddScoped<IUserService, UserService>();
-      services.AddScoped<IProductService, ProductService>();
-      services.AddScoped<ICartService, CartService>();
-      services.AddScoped<IShippingMethodService, ShippingMethodService>();
-      services.AddScoped<IPaymentMethodService, PaymentMethodService>();
-      services.AddScoped<ICustomerService, CustomerService>();
-      services.AddScoped<IOrderService, OrderService>();
-      services.AddScoped<ICustomer2FAVerificationService, Customer2FAVerificationService>();
-      // services.AddScoped<AuthService>();
+      services.RegisterAllDBIndex();
+      services.RegisterAPIServices();
+      services.RegisterAutoMappingProfiles();
 
       services.AddCors();
       services.AddControllers();
       services.AddResponseCompression();
-      services.AddAutoMapper(config => config.AddProfile(new ProductMappingProfile()), typeof(Startup));
-      services.AddAutoMapper(config => config.AddProfile(new CartMappingProfile()), typeof(Startup));
-      services.AddAutoMapper(config => config.AddProfile(new ShippingMethodMappingProfile()), typeof(Startup));
-      services.AddAutoMapper(config => config.AddProfile(new PaymentMethodMappingProfile()), typeof(Startup));
-      services.AddAutoMapper(config => config.AddProfile(new CustomerMappingProfile()), typeof(Startup));
       // services.AddDbContext<TokenStoreDbContext>(options => options.UseSqlite("Filename=./tokenstore.db"));
 
       services.AddMvc(Options => Options.Filters.Add(new ValidateModelStateAttribute()))
