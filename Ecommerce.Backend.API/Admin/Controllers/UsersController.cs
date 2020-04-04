@@ -18,6 +18,9 @@ namespace Ecommerce.Backend.API.Admin.Controllers
 {
   [SwaggerTag("Admin Users")]
   [Produces("application/json")]
+  [ProducesResponseType(StatusCodes.Status200OK)]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
+  [ProducesResponseType(StatusCodes.Status401Unauthorized)]
   [Authorize]
   [Route("admin/api/users")]
   [ApiController]

@@ -6,6 +6,8 @@ using Ecommerce.Backend.Common.DTO;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -13,6 +15,10 @@ namespace Ecommerce.Backend.API.Admin.Controllers
 {
   [SwaggerTag("Admin Customer 2FA Verfications")]
   [Produces("application/json")]
+  [ProducesResponseType(StatusCodes.Status200OK)]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
+  [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+  [Authorize]
   [Route("admin/api/customer/verifications")]
   [ApiController]
   public class Customer2FAVerificationsController : ControllerBase
