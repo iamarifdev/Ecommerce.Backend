@@ -7,7 +7,6 @@ using System.Text.Json;
 using Ecommerce.Backend.API.Helpers;
 using Ecommerce.Backend.API.Middlewares;
 using Ecommerce.Backend.API.Validators;
-using Ecommerce.Backend.Common.Configurations;
 using Ecommerce.Backend.Entities;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -20,7 +19,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -39,16 +37,10 @@ namespace Ecommerce.Backend.API
     public void ConfigureServices(IServiceCollection services)
     {
       services.Configure<ApiBehaviorOptions>(Options => Options.SuppressModelStateInvalidFilter = true);
-      services.Configure<DatabaseSetting>(Configuration.GetSection(nameof(DatabaseSetting)));
-      services.Configure<ApiConfig>(Configuration.GetSection(nameof(ApiConfig)));
-      services.Configure<JwtConfig>(Configuration.GetSection(nameof(JwtConfig)));
 
-      services.AddSingleton<IDatabaseSetting>(s => s.GetRequiredService<IOptions<DatabaseSetting>>().Value);
-      services.AddSingleton<IApiConfig>(s => s.GetRequiredService<IOptions<ApiConfig>>().Value);
-      services.AddSingleton<IJwtConfig>(s => s.GetRequiredService<IOptions<JwtConfig>>().Value);
-
-      var dbSetting = Configuration.GetSection(nameof(DatabaseSetting)).Get<DatabaseSetting>();
-      services.InitiateDbConnection(dbSetting);
+      services.RegisterConfigurationServices(Configuration);
+      services.RegisterPaymentGatewayConfiguration(Configuration);
+      services.InitiateDbConnection(Configuration);
       services.RegisterAllDBIndex();
       services.RegisterAPIServices();
       services.RegisterAutoMappingProfiles();

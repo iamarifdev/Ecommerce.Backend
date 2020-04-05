@@ -4,6 +4,7 @@
     <ProjectReference Include="..\Ecommerce.Backend.Entities\Ecommerce.Backend.Entities.csproj" />
     <ProjectReference Include="..\Ecommerce.Backend.Common\Ecommerce.Backend.Common.csproj" />
     <ProjectReference Include="..\Ecommerce.Backend.Services\Ecommerce.Backend.Services.csproj" />
+    <ProjectReference Include="..\Ecommerce.PaymentGateway.SSLCommerz\Ecommerce.PaymentGateway.SSLCommerz.csproj" />
   </ItemGroup>
 
   <ItemGroup>

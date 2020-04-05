@@ -5,9 +5,12 @@ using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
 using Ecommerce.Backend.Services.Implementations;
+using Ecommerce.PaymentGateway.SSLCommerz.Configurations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using MongoDB.Entities;
 
 namespace Ecommerce.Backend.API.Helpers
@@ -26,8 +29,9 @@ namespace Ecommerce.Backend.API.Helpers
       return webHost;
     }
 
-    public static IServiceCollection InitiateDbConnection(this IServiceCollection services, IDatabaseSetting dbSetting)
+    public static IServiceCollection InitiateDbConnection(this IServiceCollection services, IConfiguration configuration)
     {
+      var dbSetting = configuration.GetSection(nameof(DatabaseSetting)).Get<DatabaseSetting>();
       switch (dbSetting.Env)
       {
         case "Dev":
@@ -38,6 +42,25 @@ namespace Ecommerce.Backend.API.Helpers
           break;
       }
       DB.Migrate();
+      return services;
+    }
+
+    public static IServiceCollection RegisterConfigurationServices(this IServiceCollection services, IConfiguration configuration)
+    {
+      services.Configure<DatabaseSetting>(configuration.GetSection(nameof(DatabaseSetting)));
+      services.Configure<ApiConfig>(configuration.GetSection(nameof(ApiConfig)));
+      services.Configure<JwtConfig>(configuration.GetSection(nameof(JwtConfig)));
+
+      services.AddSingleton<IDatabaseSetting>(s => s.GetRequiredService<IOptions<DatabaseSetting>>().Value);
+      services.AddSingleton<IApiConfig>(s => s.GetRequiredService<IOptions<ApiConfig>>().Value);
+      services.AddSingleton<IJwtConfig>(s => s.GetRequiredService<IOptions<JwtConfig>>().Value);
+      return services;
+    }
+
+    public static IServiceCollection RegisterPaymentGatewayConfiguration(this IServiceCollection services, IConfiguration configuration)
+    {
+      services.Configure<SSLCommerzConfig>(configuration.GetSection(nameof(SSLCommerzConfig)));
+      services.AddSingleton<ISSLCommerzConfig>(s => s.GetRequiredService<IOptions<SSLCommerzConfig>>().Value);
       return services;
     }
 
