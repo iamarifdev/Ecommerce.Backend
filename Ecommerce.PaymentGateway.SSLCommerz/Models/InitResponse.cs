@@ -36,6 +36,6 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Models
     public IEnumerable<Description> Descriptions { get; set; }
 
     [JsonPropertyName("is_direct_pay_enable")]
-    public string IsDirectPayEnable { get; set; }
+    public int IsDirectPayEnable { get; set; }
   }
 }
