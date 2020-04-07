@@ -12,6 +12,7 @@ namespace Ecommerce.Backend.API.Helpers
     {
       return new ApiResponse<bool> { Message = message, Result = result, Success = true };
     }
+    
     public static ApiResponse<TResult> CreateSuccessResponse<TResult>(this TResult result, string message = null) where TResult : class
     {
       return new ApiResponse<TResult> { Message = message, Result = result, Success = true };

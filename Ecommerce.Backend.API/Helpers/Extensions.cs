@@ -6,6 +6,8 @@ using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
 using Ecommerce.Backend.Services.Implementations;
 using Ecommerce.PaymentGateway.SSLCommerz.Configurations;
+using Ecommerce.PaymentGateway.SSLCommerz.Helpers;
+using Ecommerce.PaymentGateway.SSLCommerz.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -89,6 +91,13 @@ namespace Ecommerce.Backend.API.Helpers
       services.AddScoped<ICustomerService, CustomerService>();
       services.AddScoped<IOrderService, OrderService>();
       services.AddScoped<ICustomer2FAVerificationService, Customer2FAVerificationService>();
+      return services;
+    }
+
+    public static IServiceCollection RegisterPaymentAPIServices(this IServiceCollection services)
+    {
+      services.AddScoped<SSLCommerzHttpClient>();
+      services.AddScoped<ISSLCommerzService, SSLCommerzService>();
       return services;
     }
 

@@ -43,6 +43,7 @@ namespace Ecommerce.Backend.API
       services.InitiateDbConnection(Configuration);
       services.RegisterAllDBIndex();
       services.RegisterAPIServices();
+      services.RegisterPaymentAPIServices();
       services.RegisterAutoMappingProfiles();
 
       services.AddCors();
