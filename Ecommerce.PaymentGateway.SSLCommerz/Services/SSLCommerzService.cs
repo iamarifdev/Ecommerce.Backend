@@ -26,6 +26,7 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
       // Integration Required Parameters
       parameters.Add("store_id", _config.StoreId);
       parameters.Add("store_passwd", _config.StoreSecretKey);
+      parameters.Add("total_amount", "500.00");
       parameters.Add("currency", Currency.BDT);
       parameters.Add("tran_id", ObjectId.GenerateNewId().ToString());
       parameters.Add("success_url", _config.SuccessUrl);
@@ -33,8 +34,6 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
       parameters.Add("cancel_url", _config.CancelUrl);
       parameters.Add("ipn_url", _config.IPNListnerUrl);
       parameters.Add("emi_option", $"{EMIOption.Enabled}");
-      // it will eventually come from frontend
-      parameters.Add("product_category", "clothing");
 
       // Customer Information
       parameters.Add("cus_name", "Test customer");
@@ -47,8 +46,14 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
       parameters.Add("cus_phone", "01793574440");
 
       // Shipment Information
-      parameters.Add("shipping_method", "Courier"); // Example: YES or NO or Courier
+      parameters.Add("shipping_method", "YES"); // Example: YES or NO or Courier
       parameters.Add("num_of_item", "5");
+      parameters.Add("ship_name", "H#04, R#22, Block-D, Mirpur-12");
+      parameters.Add("ship_add1", "H#04, R#22, Block-D, Mirpur-12");
+      parameters.Add("ship_city", "Dhaka");
+      parameters.Add("ship_state", "Dhaka");
+      parameters.Add("ship_postcode", "1216");
+      parameters.Add("ship_country", "Bangladesh");
 
       // Product Information
       parameters.Add("product_name", "Test product");

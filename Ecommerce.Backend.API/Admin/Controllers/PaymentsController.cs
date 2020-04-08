@@ -1,6 +1,7 @@
 using System;
 using AutoMapper;
 using Ecommerce.Backend.API.Helpers;
+using Ecommerce.PaymentGateway.SSLCommerz.Models;
 using Ecommerce.PaymentGateway.SSLCommerz.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,15 +29,14 @@ namespace Ecommerce.Backend.API.Admin.Controllers
     /// <summary>
     /// Recieve IPN from PaymentGateway Service
     /// </summary>
+    [Consumes("application/x-www-form-urlencoded")]
     [HttpPost("listen-ipn")]
-    public ActionResult ListenIPN(HttpRequest request)
+    public ActionResult ListenIPN([FromForm] IPN ipn)
     {
       try
       {
-        Console.Write("IPN Received>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> body:"+ request.Body.ToString());
-        Console.Write("IPN Received>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> form:"+ request.Form.ToString());
-        Console.Write("IPN Received>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> query:"+ request.Query.ToString());
-        return Ok(request.Body.ToString());
+        Console.WriteLine("IPN Received>>>>>>>>>>>>>>>>>>>>>>>>>>>>> form:"+ ipn.TransactionId, ipn.Amount, ipn.StoreAmount);
+        return Ok(ipn);
       }
       catch (Exception exception)
       {
