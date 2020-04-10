@@ -1,12 +1,38 @@
+using System;
+using System.Text.Json.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Ecommerce.Backend.Entities
 {
+  public class CustomerAuth
+  {
+    [BsonRequired]
+    [BsonElement("password")]
+    public string Password { get; set; } // hashed password
+
+    [BsonRequired]
+    [BsonElement("salt")]
+    public string Salt { get; set; }
+
+    [BsonIgnoreIfNull]
+    [BsonElement("passwordResetToken")]
+    public string PasswordResetToken { get; set; }
+
+    [BsonIgnoreIfNull]
+    [BsonElement("passwordResetExpires")]
+    public DateTime? PasswordResetExpires { get; set; }
+  }
+
   public class Customer : BaseEntityWithStatus
   {
     [BsonElement("phoneNo")]
     [BsonRequired]
     public string PhoneNo { get; set; }
+
+    [JsonIgnore]
+    [BsonElement("auth")]
+    [BsonRequired]
+    public CustomerAuth Auth { get; set; }
 
     [BsonElement("email")]
     [BsonIgnoreIfNull]

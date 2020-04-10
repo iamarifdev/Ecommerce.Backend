@@ -1,15 +1,23 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ecommerce.Backend.Common.DTO;
+using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
-using MongoDB.Bson;
 
 namespace Ecommerce.Backend.Services.Implementations
 {
   public class CustomerService : BaseService<Customer>, ICustomerService
   {
+    public async Task<Customer> AddCustomer(Customer customer)
+    {
+      var salt = Salt.Create();
+      customer.Auth.Password = Hash.Create(customer.Auth.Password, salt);
+      customer.Auth.Salt = salt;
+      await Add(customer);
+      return customer;
+    }
+
     public async Task<PagedList<CustomerListItemDto>> GetPaginatedCustomerList(PagedQuery query)
     {
       var items = await GetPaginatedList<CustomerListItemDto>(query, customer => new CustomerListItemDto

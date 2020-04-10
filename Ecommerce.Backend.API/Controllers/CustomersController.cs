@@ -78,7 +78,7 @@ namespace Ecommerce.Backend.API.Controllers
           throw new Exception("Invalid verification code!");
         }
         var customer = _mapper.Map<Customer>(dto);
-        var createdCustomer = await _customerService.Add(customer);
+        var createdCustomer = await _customerService.AddCustomer(customer);
         return createdCustomer.CreateSuccessResponse("Customer created successfully!");
       }
       catch (Exception exception)

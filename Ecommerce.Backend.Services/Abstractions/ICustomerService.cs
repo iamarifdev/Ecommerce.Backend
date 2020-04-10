@@ -7,6 +7,7 @@ namespace Ecommerce.Backend.Services.Abstractions
 {
   public interface ICustomerService : IBaseService<Customer>
   {
+    Task<Customer> AddCustomer(Customer customer);
     Task<PagedList<CustomerListItemDto>> GetPaginatedCustomerList(PagedQuery query);
     Task<Customer> UpdateBillingAddress(string customerId, BillingAddress address);
     Task<Customer> UpdateShippingAddress(string customerId, ShippingAddress address);

@@ -8,7 +8,7 @@ namespace Ecommerce.Backend.API.AutoMappingProfiles
   {
     public CustomerMappingProfile()
     {
-      CreateMap<CustomerAddDto, Customer>();
+      CreateMap<CustomerAddDto, Customer>().ForPath(m => m.Auth.Password, (opt) => opt.MapFrom(dest => dest.Password));
       CreateMap<CustomerBillingAddressDto, BillingAddress>();
       CreateMap<CustomerShippingAddressDto, ShippingAddress>();
     }

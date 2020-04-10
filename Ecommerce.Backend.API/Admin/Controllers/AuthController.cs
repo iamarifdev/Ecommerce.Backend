@@ -8,7 +8,7 @@ using Ecommerce.Backend.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Ecommerce.Backend.API.Controllers
+namespace Ecommerce.Backend.API.Admin.Controllers
 {
   [SwaggerTag("Admin Auth")]
   [Produces("application/json")]
@@ -26,7 +26,7 @@ namespace Ecommerce.Backend.API.Controllers
     /// <summary>
     /// Seed Database
     /// </summary>
-    [HttpPost("/api/seed/database")]
+    [HttpPost("/api/seed")]
     public async Task<ActionResult<ApiResponse<User>>> SeedDatabase()
     {
       try

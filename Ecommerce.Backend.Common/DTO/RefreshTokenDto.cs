@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Ecommerce.Backend.Common.DTO
 {
   public class RefreshTokenDto

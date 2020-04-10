@@ -18,7 +18,7 @@ namespace Ecommerce.Backend.API.Admin.Controllers
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
   [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-  [Authorize]
+  // [Authorize]
   [Route("admin/api/customer/verifications")]
   [ApiController]
   public class Customer2FAVerificationsController : ControllerBase

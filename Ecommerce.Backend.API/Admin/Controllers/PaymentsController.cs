@@ -31,12 +31,19 @@ namespace Ecommerce.Backend.API.Admin.Controllers
     /// </summary>
     [Consumes("application/x-www-form-urlencoded")]
     [HttpPost("listen-ipn")]
-    public ActionResult ListenIPN([FromForm] IPN ipn)
+    public ActionResult ListenIPN([FromForm] IFormCollection ipn)
     {
       try
       {
-        Console.WriteLine("IPN Received>>>>>>>>>>>>>>>>>>>>>>>>>>>>> form:"+ ipn.TransactionId, ipn.Amount, ipn.StoreAmount);
-        return Ok(ipn);
+        Console.WriteLine("IPN Received>>>>>>>>>>>>>>>>>>>>>>>>>>>>> form:" + ipn["transaction_id"], ipn["amount"], ipn["store_amount"]);
+        var(isValid, message) = _sslCommerzService.CheckIPNStatus(ipn);
+        if (!isValid)
+        {
+          return Ok(new { isValid, message });
+        }
+
+        var isHashVerfied = _sslCommerzService.VerifyIPNHash(ipn);
+        return Ok(new { isValid = isHashVerfied, message = isHashVerfied ? message : "IPN Hash is not verified!" });
       }
       catch (Exception exception)
       {

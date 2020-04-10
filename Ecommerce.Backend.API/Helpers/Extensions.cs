@@ -88,6 +88,7 @@ namespace Ecommerce.Backend.API.Helpers
       services.AddScoped<ICartService, CartService>();
       services.AddScoped<IShippingMethodService, ShippingMethodService>();
       services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+      services.AddScoped<ICustomerAuthService, CustomerAuthService>();
       services.AddScoped<ICustomerService, CustomerService>();
       services.AddScoped<IOrderService, OrderService>();
       services.AddScoped<ICustomer2FAVerificationService, Customer2FAVerificationService>();

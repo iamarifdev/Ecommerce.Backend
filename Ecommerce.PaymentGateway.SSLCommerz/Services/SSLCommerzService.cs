@@ -1,15 +1,20 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Ecommerce.PaymentGateway.SSLCommerz.Configurations;
 using Ecommerce.PaymentGateway.SSLCommerz.Helpers;
 using Ecommerce.PaymentGateway.SSLCommerz.Models;
+using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 
 namespace Ecommerce.PaymentGateway.SSLCommerz.Services
 {
 
-  public class SSLCommerzService: ISSLCommerzService
+  public class SSLCommerzService : ISSLCommerzService
   {
     private readonly ISSLCommerzConfig _config;
     private readonly SSLCommerzHttpClient _httpClient;
@@ -29,9 +34,9 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
       parameters.Add("total_amount", "500.00");
       parameters.Add("currency", Currency.BDT);
       parameters.Add("tran_id", ObjectId.GenerateNewId().ToString());
-      parameters.Add("success_url", _config.SuccessUrl);
-      parameters.Add("fail_url", _config.FailUrl);
-      parameters.Add("cancel_url", _config.CancelUrl);
+      parameters.Add("success_url", $"{_config.AppBaseUrl}{_config.SuccessUrl}");
+      parameters.Add("fail_url", $"{_config.AppBaseUrl}{_config.FailUrl}");
+      parameters.Add("cancel_url", $"{_config.AppBaseUrl}{_config.CancelUrl}");
       parameters.Add("ipn_url", _config.IPNListnerUrl);
       parameters.Add("emi_option", $"{EMIOption.Enabled}");
 
@@ -70,6 +75,71 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
       var response = await _http.PostAsync($"{_config.SubmitUrl}", urlEncodedContent);
       var initResponse = await response.Content.ReadAsJsonAsync<InitResponse>();
       return initResponse;
+    }
+
+    public string GenerateMD5Hash(string plainString)
+    {
+      var asciiBytes = ASCIIEncoding.ASCII.GetBytes(plainString);
+      var hashedBytes = MD5CryptoServiceProvider.Create().ComputeHash(asciiBytes);
+      string hashedString = BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
+      return hashedString;
+    }
+
+    public(bool, string) CheckIPNStatus(IFormCollection ipn)
+    {
+      if (string.IsNullOrWhiteSpace(ipn["status"]))
+      {
+        return (false, "Invalid IPN, no status key or value is present.");
+      }
+      var status = ipn["status"].ToString();
+      switch (status)
+      {
+        case Status.VALID:
+          return (true, "Successfull Transaction.");
+        case Status.FAILED:
+          return (false, "Transaction is declined by customer's Issuer Bank.");
+        case Status.CANCELLED:
+          return (false, "Transaction is cancelled by the customer.");
+        default:
+          return (false, "Invalid IPN, no valid status is present.");
+      }
+    }
+
+    public bool VerifyIPNHash(IFormCollection ipn)
+    {
+      if (string.IsNullOrWhiteSpace(ipn["verify_key"]) || string.IsNullOrWhiteSpace(ipn["verify_sign"]))
+      {
+        return false;
+      }
+
+      var keyList = ipn["verify_key"].ToString().Split(',').ToList<string>();
+      var keyValues = new List<KeyValuePair<string, string>>();
+
+      // Store key and value in a list
+      keyList.ForEach(key => keyValues.Add(new KeyValuePair<string, string>(key, ipn[key])));
+
+      // // Store Hashed Password in list
+      // keyValues.Add(new KeyValuePair<string, string>("store_passwd", GenerateMD5Hash(_config.StoreSecretKey)));
+
+      // Sort the keyValues
+      keyValues.Sort(
+        delegate(KeyValuePair<string, string> pair1, KeyValuePair<string, string> pair2)
+        {
+          return pair1.Key.CompareTo(pair2.Key);
+        }
+      );
+
+      // Concat and make query string from keyValues
+      var queryString = "";
+      keyValues.ForEach(keyValue => queryString += $"{keyValue.Key}={keyValue.Value}&");
+      queryString = queryString.TrimEnd('&');
+
+      // Make hash by query string and store
+      var generatedHash = GenerateMD5Hash(queryString);
+
+      // Check if generated hash and verify_sign match or not
+      var isMatched = generatedHash == ipn["verify_sign"];
+      return isMatched;
     }
   }
 }
