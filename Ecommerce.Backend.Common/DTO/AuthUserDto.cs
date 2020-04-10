@@ -22,6 +22,7 @@ namespace Ecommerce.Backend.Common.DTO
   {
     public string Username { get; set; }
     public string Email { get; set; }
+    public string PhoneNo { get; set; }
     public UserRole Role { get; set; }
     public string UserId { get; set; }
     public string FullName { get; set; }

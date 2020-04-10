@@ -216,6 +216,7 @@ namespace Ecommerce.Backend.Services.Implementations
       var authUser = new AuthUserDto
       {
         UserId = user.ID,
+        Email = user.Email,
         Role = new UserRole(user.RoleRef),
         Username = user.Username,
         FullName = user.FullName,

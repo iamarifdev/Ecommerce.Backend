@@ -32,8 +32,7 @@ namespace Ecommerce.Backend.Common.DTO
         AvatarUrl = customer.AvatarUrl,
         Email = customer.Email,
         PhoneNo = customer.PhoneNo,
-        FirstName = customer.FirstName,
-        LastName = customer.LastName
+        FullName = customer.FullName
       };
       PaymentMethod = new OrderPaymentMethodDto
       {
@@ -72,8 +71,7 @@ namespace Ecommerce.Backend.Common.DTO
 
   public class OrderCustomerDto
   {
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
+    public string FullName { get; set; }
     public string PhoneNo { get; set; }
     public string Email { get; set; }
     public string AvatarUrl { get; set; }

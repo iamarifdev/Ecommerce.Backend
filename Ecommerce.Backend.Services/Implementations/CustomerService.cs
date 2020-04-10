@@ -23,8 +23,7 @@ namespace Ecommerce.Backend.Services.Implementations
       var items = await GetPaginatedList<CustomerListItemDto>(query, customer => new CustomerListItemDto
       {
         ID = customer.ID,
-          FirstName = customer.FirstName,
-          LastName = customer.LastName,
+          FullName = customer.FullName,
           AvatarUrl = customer.AvatarUrl,
           Email = customer.Email,
           PhoneNo = customer.PhoneNo,
@@ -48,8 +47,7 @@ namespace Ecommerce.Backend.Services.Implementations
       {
         customer.ShippingAddress = new ShippingAddress
         {
-          FirstName = customer.BillingAddress.FirstName,
-          LastName = customer.BillingAddress.LastName,
+          FullName = customer.BillingAddress.FullName,
           Email = customer.BillingAddress.Email,
           PhoneNo = customer.BillingAddress.PhoneNo,
           Country = customer.BillingAddress.Country,

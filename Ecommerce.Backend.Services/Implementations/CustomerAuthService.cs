@@ -150,9 +150,11 @@ namespace Ecommerce.Backend.Services.Implementations
       var authUser = new AuthUserDto
       {
         UserId = customer.ID,
+        PhoneNo = customer.PhoneNo,
+        Email = customer.Email,
         Role = null,
         Username = null,
-        FullName = customer.FirstName.IsNotEmpty() ? $"{customer.FirstName} {customer.LastName}" : null,
+        FullName = customer.FullName,
         AvatarUrl = customer.AvatarUrl,
         AccessToken = GenerateAccessToken(customer),
         RefreshToken = GenerateRefreshToken(customer),

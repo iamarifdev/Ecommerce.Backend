@@ -29,6 +29,10 @@ namespace Ecommerce.Backend.Entities
     [BsonRequired]
     public string PhoneNo { get; set; }
 
+    [BsonElement("fullName")]
+    [BsonRequired]
+    public string FullName { get; set; }
+
     [JsonIgnore]
     [BsonElement("auth")]
     [BsonRequired]
@@ -37,14 +41,6 @@ namespace Ecommerce.Backend.Entities
     [BsonElement("email")]
     [BsonIgnoreIfNull]
     public string Email { get; set; }
-
-    [BsonElement("firstName")]
-    [BsonIgnoreIfNull]
-    public string FirstName { get; set; }
-
-    [BsonElement("lastName")]
-    [BsonIgnoreIfNull]
-    public string LastName { get; set; }
 
     [BsonElement("billingAddress")]
     [BsonIgnoreIfNull]
@@ -76,13 +72,9 @@ namespace Ecommerce.Backend.Entities
     [BsonIgnoreIfNull]
     public string Email { get; set; }
 
-    [BsonElement("firstName")]
+    [BsonElement("fullName")]
     [BsonRequired]
-    public string FirstName { get; set; }
-
-    [BsonElement("lastName")]
-    [BsonRequired]
-    public string LastName { get; set; }
+    public string FullName { get; set; }
 
     [BsonElement("country")]
     [BsonRequired]
