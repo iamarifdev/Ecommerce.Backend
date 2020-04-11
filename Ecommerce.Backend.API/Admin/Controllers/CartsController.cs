@@ -51,8 +51,7 @@ namespace Ecommerce.Backend.API.Admin.Controllers
     /// <summary>
     /// Get Cart by ID
     /// </summary>
-    /// <param name="cartId"></param>
-    [HttpGet("cartId")]
+    [HttpGet("id")]
     public async Task<ActionResult<ApiResponse<Cart>>> Get([FromQuery] string cartId, [FromQuery] string customerId)
     {
       try

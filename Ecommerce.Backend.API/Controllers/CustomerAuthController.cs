@@ -31,12 +31,12 @@ namespace Ecommerce.Backend.API.Controllers
       try
       {
         var authUser = await _customerAuthService.Authenticate(dto.PhoneNo, dto.Password);
-        if (authUser == null) throw new UnauthorizedAccessException("Unauthorized access!");
+        if (authUser == null) throw new Exception("Invalid phone number or password.");
         return authUser.CreateSuccessResponse("Logged in successfully");
       }
       catch (Exception exception)
       {
-        return Unauthorized(exception.CreateErrorResponse());
+        return BadRequest(exception.CreateErrorResponse());
       }
     }
 

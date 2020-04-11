@@ -28,8 +28,7 @@ namespace Ecommerce.Backend.API.Controllers
     /// <summary>
     /// Get Cart by ID
     /// </summary>
-    /// <param name="cartId"></param>
-    [HttpGet("cartId")]
+    [HttpGet("id")]
     public async Task<ActionResult<ApiResponse<Cart>>> Get([FromQuery] string cartId, [FromQuery] string customerId)
     {
       try
@@ -39,7 +38,6 @@ namespace Ecommerce.Backend.API.Controllers
           return BadRequest("Cart ID or Customer ID should be present in query params.");
         }
         var cart = await _cartService.GetCartById(cartId, customerId);
-        if (cart == null) throw new Exception("No cart information is found");
         return cart.CreateSuccessResponse();
       }
       catch (Exception exception)
