@@ -12,8 +12,12 @@ namespace Ecommerce.Backend.Entities
     [BsonRequired]
     public double Cost { get; set; } = 0;
 
+    [BsonElement("iconName")]
+    [BsonIgnoreIfNull]
+    public string IconName { get; set; }
+
     [BsonElement("isOutSide")]
     [BsonRequired]
-    public bool IsOutSide {get; set; } = false;
+    public bool IsOutSide { get; set; } = false;
   }
 }

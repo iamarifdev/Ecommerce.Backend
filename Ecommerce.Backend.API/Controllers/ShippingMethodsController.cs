@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Ecommerce.Backend.API.Helpers;
@@ -25,14 +26,14 @@ namespace Ecommerce.Backend.API.Controllers
     }
 
     /// <summary>
-    /// Get Pagniated shipping methods
+    /// Get shipping method list
     /// </summary>
     [HttpGet("list")]
-    public async Task<ActionResult<ApiResponse<PagedList<ShippingMethod>>>> GatPagedShippingMethodList([FromQuery] PagedQuery query)
+    public async Task<ActionResult<ApiResponse<List<ShippingMethod>>>> GatShippingMethodList([FromQuery] Query query)
     {
       try
       {
-        var pagedShippingMethodList = await _shippingMethodService.GetPaginatedList(query);
+        var pagedShippingMethodList = await _shippingMethodService.GetList(query);
         return pagedShippingMethodList.CreateSuccessResponse();
       }
       catch (Exception exception)

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Ecommerce.Backend.API.Helpers;
 using Ecommerce.Backend.Common.DTO;
 using Ecommerce.Backend.Common.Models;
-using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -21,27 +20,6 @@ namespace Ecommerce.Backend.API.Admin.Controllers
     public AuthController(IAuthService authService)
     {
       _authService = authService;
-    }
-
-    /// <summary>
-    /// Seed Database
-    /// </summary>
-    [HttpPost("/api/seed")]
-    public async Task<ActionResult<ApiResponse<User>>> SeedDatabase()
-    {
-      try
-      {
-        var(role, user) = await _authService.SeedDatabase();
-        if (role == null || user == null)
-        {
-          throw new InvalidOperationException();
-        }
-        return user.CreateSuccessResponse("Database seeded succesfully");
-      }
-      catch (Exception exception)
-      {
-        return BadRequest(exception.CreateErrorResponse());
-      }
     }
 
     /// <summary>

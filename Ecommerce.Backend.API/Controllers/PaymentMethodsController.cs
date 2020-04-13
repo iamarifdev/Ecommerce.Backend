@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Ecommerce.Backend.API.Helpers;
@@ -26,14 +27,14 @@ namespace Ecommerce.Backend.API.Controllers
     }
 
     /// <summary>
-    /// Get Pagniated payment methods
+    /// Get all payment methods
     /// </summary>
     [HttpGet("list")]
-    public async Task<ActionResult<ApiResponse<PagedList<PaymentMethod>>>> GatPagedPaymentMethodList([FromQuery] PagedQuery query)
+    public async Task<ActionResult<ApiResponse<List<PaymentMethod>>>> GatPaymentMethodList([FromQuery] Query query)
     {
       try
       {
-        var pagedPaymentMethodList = await _paymentMethodService.GetPaginatedList(query);
+        var pagedPaymentMethodList = await _paymentMethodService.GetList(query);
         return pagedPaymentMethodList.CreateSuccessResponse();
       }
       catch (Exception exception)
@@ -47,7 +48,7 @@ namespace Ecommerce.Backend.API.Controllers
     /// </summary>
     /// <param name="paymentMethodId"></param>
     [HttpGet("{paymentMethodId}")]
-    public async Task<ActionResult<ApiResponse<PaymentMethod>>> Get(String paymentMethodId)
+    public async Task<ActionResult<ApiResponse<PaymentMethod>>> Get(string paymentMethodId)
     {
       try
       {

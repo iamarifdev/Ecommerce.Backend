@@ -4,6 +4,7 @@ namespace Ecommerce.Backend.Common.DTO
   {
     public string MethodName { get; set; }
     public bool HasPaymentGateway { get; set; }
+    public string IconName { get; set; }
     public bool IsEnabled { get; set; }
   }
 }

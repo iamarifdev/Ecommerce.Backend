@@ -7,6 +7,10 @@ namespace Ecommerce.Backend.Entities
     [BsonElement("methodName")]
     [BsonRequired]
     public string MethodName { get; set; }
+    
+    [BsonElement("iconName")]
+    [BsonIgnoreIfNull]
+    public string IconName { get; set; }
 
     [BsonElement("hasPaymentGateway")]
     [BsonRequired]

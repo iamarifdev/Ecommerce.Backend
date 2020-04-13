@@ -34,6 +34,12 @@ namespace Ecommerce.Backend.Services.Implementations
       return entity;
     }
 
+    public async Task<IEnumerable<TEntity>> AddRange(IEnumerable<TEntity> entities)
+    {
+      await _entities.InsertManyAsync(entities);
+      return entities;
+    }
+
     public async Task<TEntity> GetByExpression(Expression<Func<TEntity, bool>> expression)
     {
       var entity = await _entities.FindAsync<TEntity>(expression).Result.FirstOrDefaultAsync();
@@ -62,6 +68,19 @@ namespace Ecommerce.Backend.Services.Implementations
     {
       var dto = await _entities.Find(x => x.ID == id).Project(projection).FirstOrDefaultAsync();
       return dto;
+    }
+
+    public async Task<List<TEntity>> GetList(Query query)
+    {
+      Expression<Func<TEntity, bool>> allConditions = (entity) => !entity.IsDeleted;
+      Expression<Func<TEntity, bool>> conditions = (entity) => !entity.IsDeleted && entity.IsEnabled;
+
+      var filterConditions = Builders<TEntity>.Filter.Where(query.All ? allConditions : conditions);
+      var entities = await _entities
+        .Find(filterConditions)
+        .Sort(new BsonDocument(query.Sort, query.Order))
+        .ToListAsync();
+      return entities;
     }
 
     public async Task<PagedList<TEntity>> GetPaginatedList(PagedQuery query)

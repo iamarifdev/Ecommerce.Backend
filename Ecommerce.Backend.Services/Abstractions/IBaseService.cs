@@ -11,6 +11,7 @@ namespace Ecommerce.Backend.Services.Abstractions
 {
   public interface IBaseService<TEntity> where TEntity : BaseEntityWithStatus
   {
+    Task<List<TEntity>> GetList(Query query);
     Task<PagedList<TEntity>> GetPaginatedList(PagedQuery query);
     Task<PagedList<TDto>> GetPaginatedList<TDto>(PagedQuery query, Expression<Func<TEntity, TDto>> projection) where TDto: class;
     Task<TEntity> GetByExpression(Expression<Func<TEntity, bool>> expression);
@@ -19,6 +20,7 @@ namespace Ecommerce.Backend.Services.Abstractions
     Task<TEntity> GetById(string id);
     Task<TDto> GetById<TDto>(string id, Expression<Func<TEntity, TDto>> projection) where TDto: class;
     Task<bool> ValidateIdentity(Dictionary<string, string> keyValues);
+    Task<IEnumerable<TEntity>> AddRange(IEnumerable<TEntity> entities);
     Task<TEntity> Add(TEntity entity);
     Task<TEntity> UpdatePartial(Expression<Func<TEntity, bool>> condition, UpdateDefinition<TEntity> update);
     Task<TEntity> UpdateById(string id, TEntity entity);
