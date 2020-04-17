@@ -57,7 +57,7 @@ namespace Ecommerce.Backend.Entities
     public string FeatureImageUrl { get; set; }
   }
 
-  public class Cart : BaseEntity
+  public class Cart : BaseEntityWithStatus
   {
     [BsonElement("customerId")]
     [BsonRequired]

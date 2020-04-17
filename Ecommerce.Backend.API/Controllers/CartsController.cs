@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Ecommerce.Backend.API.Helpers;
 using Ecommerce.Backend.Common.DTO;
+using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
@@ -33,9 +34,9 @@ namespace Ecommerce.Backend.API.Controllers
     {
       try
       {
-        if (string.IsNullOrWhiteSpace(cartId) && string.IsNullOrWhiteSpace(customerId))
+        if (cartId.IsEmpty() && customerId.IsEmpty())
         {
-          return BadRequest("Cart ID or Customer ID should be present in query params.");
+          throw new Exception("Cart ID or Customer ID should be present in query params.");
         }
         var cart = await _cartService.GetCartById(cartId, customerId);
         return cart.CreateSuccessResponse();
@@ -56,6 +57,27 @@ namespace Ecommerce.Backend.API.Controllers
       {
         var createdCart = await _cartService.AddCartProduct(dto);
         return createdCart.CreateSuccessResponse("Cart created successfully!");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
+    /// Assign CustomerId to a cart
+    /// </summary>
+    /// <param name="cartId"></param>
+    /// <param name="customerId"></param>
+    [HttpPatch("{cartId}/assign/{customerId}")]
+    public async Task<ActionResult<ApiResponse<Cart>>> AssignCustomer(string cartId, string customerId)
+    {
+      try
+      {
+        if (cartId.IsEmpty()) throw new Exception("Cart ID is empty.");
+        if (customerId.IsEmpty()) throw new Exception("Customer ID is empty.");
+        var updatedCart = await _cartService.AssignCustomerId(cartId, customerId);
+        return updatedCart.CreateSuccessResponse();
       }
       catch (Exception exception)
       {

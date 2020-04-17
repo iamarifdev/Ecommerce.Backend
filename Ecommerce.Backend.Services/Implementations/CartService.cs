@@ -14,7 +14,7 @@ using MongoDB.Entities;
 
 namespace Ecommerce.Backend.Services.Implementations
 {
-  public class CartService : ICartService
+  public class CartService : BaseService<Cart>, ICartService
   {
     private readonly IMongoCollection<Cart> _carts;
     private readonly IProductService _productService;
@@ -126,7 +126,7 @@ namespace Ecommerce.Backend.Services.Implementations
 
     public async Task<Cart> GetCartById(string cartId = null, string customerId = null)
     {
-      if (cartId == null && customerId == null) return null;
+      if (cartId.IsEmpty() && customerId.IsEmpty()) return null;
       Expression<Func<Cart, bool>> cartIdFilter = (c) => c.ID == cartId;
       Expression<Func<Cart, bool>> cartCustomerIdFilter = (c) => c.CustomerId == customerId && c.Status == CartStatus.Active;
       var filterConditions = Builders<Cart>.Filter.Where(cartId != null ? cartIdFilter : cartCustomerIdFilter);
@@ -134,6 +134,15 @@ namespace Ecommerce.Backend.Services.Implementations
       if (cart == null) return null;
       cart = await _populateCartProductsImage(cart);
       return cart;
+    }
+
+    public async Task<Cart> AssignCustomerId(string cartId, string customerId)
+    {
+      if (cartId.IsEmpty() || customerId.IsEmpty()) return null;
+      var update = Builders<Cart>.Update.Set(cart => cart.CustomerId, customerId);
+      var updatedCart = await UpdatePartial(cart => cart.ID == cartId, update);
+      updatedCart = await _populateCartProductsImage(updatedCart);   
+      return updatedCart;
     }
 
     public async Task<Cart> AddCartProduct(AddCartProductDto dto)
