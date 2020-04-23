@@ -13,13 +13,8 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Ecommerce.Backend.API.Controllers
 {
   [SwaggerTag("Payments")]
-  [Produces("application/json")]
-  [ProducesResponseType(StatusCodes.Status200OK)]
-  [ProducesResponseType(StatusCodes.Status400BadRequest)]
-  [ProducesResponseType(StatusCodes.Status401Unauthorized)]
   [Route("api/payments")]
-  [ApiController]
-  public class PaymentsController : ControllerBase
+  public class PaymentsController : Controller
   {
     private readonly IMapper _mapper;
     private readonly ISSLCommerzService _sslCommerzService;
@@ -32,13 +27,34 @@ namespace Ecommerce.Backend.API.Controllers
     /// <summary>
     /// Initiate SSLCommerze transaction
     /// </summary>
-    [HttpPost("transactions/initiate")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [HttpPost("transaction/initiate")]
     public async Task<ActionResult<ApiResponse<InitResponse>>> InitiateTransaction(Dictionary<string, string> parameters)
     {
       try
       {
         var response = await _sslCommerzService.InitiateTransaction(parameters);
         return response.CreateSuccessResponse("Payment transaction initiated successfully!");
+      }
+      catch (Exception exception)
+      {
+        return BadRequest(exception.CreateErrorResponse());
+      }
+    }
+
+    /// <summary>
+    /// Handle Successfull transaction
+    /// </summary>
+    [HttpPost("transaction/success")]
+    public ActionResult CompleteTransaction(IFormCollection keyValues, IPN ipn)
+    {
+      try
+      {
+        var isVerified = _sslCommerzService.VerifyIPNHash(keyValues);
+        return Ok(new { ipn, isVerified });
       }
       catch (Exception exception)
       {

@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using Ecommerce.PaymentGateway.SSLCommerz.Configurations;
 using Ecommerce.PaymentGateway.SSLCommerz.Helpers;
@@ -77,14 +75,6 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
       return initResponse;
     }
 
-    public string GenerateMD5Hash(string plainString)
-    {
-      var asciiBytes = ASCIIEncoding.ASCII.GetBytes(plainString);
-      var hashedBytes = MD5CryptoServiceProvider.Create().ComputeHash(asciiBytes);
-      string hashedString = BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
-      return hashedString;
-    }
-
     public(bool, string) CheckIPNStatus(IFormCollection ipn)
     {
       if (string.IsNullOrWhiteSpace(ipn["status"]))
@@ -105,21 +95,33 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
       }
     }
 
-    public bool VerifyIPNHash(IFormCollection ipn)
+    /// <summary>
+    /// After receiving the IPN from SSLCommerz, it should be checked againsts
+    /// its key values generated MD5 hash and verify_sign
+    /// </summary>
+    /// <param name="formValue"></param>
+    /// <returns></returns>
+    public bool VerifyIPNHash(IFormCollection formValue)
     {
-      if (string.IsNullOrWhiteSpace(ipn["verify_key"]) || string.IsNullOrWhiteSpace(ipn["verify_sign"]))
+      var verifyKey = "verify_key";
+      var verifySignKey = "verify_sign";
+      
+      if (string.IsNullOrWhiteSpace(formValue[verifyKey]) || string.IsNullOrWhiteSpace(formValue[verifySignKey]))
       {
         return false;
       }
 
-      var keyList = ipn["verify_key"].ToString().Split(',').ToList<string>();
+      var keyList = formValue[verifyKey].ToString().Split(',').ToList<string>();
       var keyValues = new List<KeyValuePair<string, string>>();
 
       // Store key and value in a list
-      keyList.ForEach(key => keyValues.Add(new KeyValuePair<string, string>(key, ipn[key])));
+      keyList.ForEach(key => keyValues.Add(new KeyValuePair<string, string>(key, formValue[key])));
 
-      // // Store Hashed Password in list
-      // keyValues.Add(new KeyValuePair<string, string>("store_passwd", GenerateMD5Hash(_config.StoreSecretKey)));
+      // Store Hashed Password in list
+      keyValues.Add(new KeyValuePair<string, string>(
+        "store_passwd",
+        MD5Hash.Generate(_config.StoreSecretKey)
+      ));
 
       // Sort the keyValues
       keyValues.Sort(
@@ -135,10 +137,11 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
       queryString = queryString.TrimEnd('&');
 
       // Make hash by query string and store
-      var generatedHash = GenerateMD5Hash(queryString);
+      var generatedHash = MD5Hash.Generate(queryString);
 
       // Check if generated hash and verify_sign match or not
-      var isMatched = generatedHash == ipn["verify_sign"];
+      var verifySign = formValue[verifySignKey].ToString();
+      var isMatched = MD5Hash.Verify(generatedHash, verifySign, true);
       return isMatched;
     }
   }
