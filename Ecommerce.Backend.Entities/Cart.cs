@@ -15,7 +15,7 @@ namespace Ecommerce.Backend.Entities
   {
     public CartProduct()
     {
-      TotalPrice = UnitPrice * Quantity;
+      TotalPrice = UnitPrice * (decimal)Quantity;
     }
 
     [BsonElement("id")]
@@ -39,7 +39,7 @@ namespace Ecommerce.Backend.Entities
 
     [BsonElement("unitPrice")]
     [BsonRequired]
-    public double UnitPrice { get; set; }
+    public decimal UnitPrice { get; set; }
 
     [BsonElement("color")]
     [BsonRequired]
@@ -51,7 +51,7 @@ namespace Ecommerce.Backend.Entities
 
     [BsonIgnoreIfNull]
     [BsonElement("totalPrice")]
-    public double TotalPrice { get; set; }
+    public decimal TotalPrice { get; set; }
 
     [Ignore]
     public string FeatureImageUrl { get; set; }
@@ -73,7 +73,7 @@ namespace Ecommerce.Backend.Entities
 
     [BsonElement("totalPrice")]
     [BsonRequired]
-    public double TotalPrice { get; set; }
+    public decimal TotalPrice { get; set; }
 
     [BsonElement("products")]
     [BsonRequired]

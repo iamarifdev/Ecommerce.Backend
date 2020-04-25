@@ -92,6 +92,8 @@ namespace Ecommerce.Backend.API.Helpers
       services.AddScoped<ICustomerService, CustomerService>();
       services.AddScoped<IOrderService, OrderService>();
       services.AddScoped<ICustomer2FAVerificationService, Customer2FAVerificationService>();
+      services.AddScoped<ICustomerTransactionSessionService, CustomerTransactionSessionService>();
+      services.AddScoped<ICustomerTransactionService, CustomerTransactionService>();
       return services;
     }
 
@@ -104,19 +106,17 @@ namespace Ecommerce.Backend.API.Helpers
 
     public static IServiceCollection RegisterAllDBIndex(this IServiceCollection services)
     {
-      // Customer Index
+      // Role Index
       DB.Index<Role>()
         .Key(x => x.Name, KeyType.Ascending)
         .Option(o => o.Unique = true)
         .Create();
 
-      // Customer Index
+      // User Index
       DB.Index<User>()
         .Key(x => x.Username, KeyType.Ascending)
         .Option(o => o.Unique = true)
         .Create();
-
-      // Customer Index
       DB.Index<User>()
         .Key(x => x.Email, KeyType.Ascending)
         .Option(o => o.Unique = true)
@@ -135,6 +135,12 @@ namespace Ecommerce.Backend.API.Helpers
       // Customer Index
       DB.Index<Customer>()
         .Key(x => x.PhoneNo, KeyType.Descending)
+        .Option(o => o.Unique = true)
+        .Create();
+
+      // Customer Transaction Session Index
+      DB.Index<CustomerTransactionSession>()
+        .Key(x => x.SessionKey, KeyType.Ascending)
         .Option(o => o.Unique = true)
         .Create();
       return services;

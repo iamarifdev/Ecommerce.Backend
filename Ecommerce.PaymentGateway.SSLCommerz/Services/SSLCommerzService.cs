@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using Ecommerce.PaymentGateway.SSLCommerz.Configurations;
 using Ecommerce.PaymentGateway.SSLCommerz.Helpers;
 using Ecommerce.PaymentGateway.SSLCommerz.Models;
 using Microsoft.AspNetCore.Http;
-using MongoDB.Bson;
-
 namespace Ecommerce.PaymentGateway.SSLCommerz.Services
 {
 
@@ -29,9 +28,6 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
       // Integration Required Parameters
       parameters.Add("store_id", _config.StoreId);
       parameters.Add("store_passwd", _config.StoreSecretKey);
-      parameters.Add("total_amount", "500.00");
-      parameters.Add("currency", Currency.BDT);
-      parameters.Add("tran_id", ObjectId.GenerateNewId().ToString());
       parameters.Add("success_url", $"{_config.AppBaseUrl}{_config.SuccessUrl}");
       parameters.Add("fail_url", $"{_config.AppBaseUrl}{_config.FailUrl}");
       parameters.Add("cancel_url", $"{_config.AppBaseUrl}{_config.CancelUrl}");
@@ -62,7 +58,6 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
       parameters.Add("product_name", "Test product");
       parameters.Add("product_category", "Shoes");
       parameters.Add("product_profile", ProductProfile.PhysicalGoods);
-      parameters.Add("cart", "[{\"product\":\"DHK TO BRS AC A1\",\"quantity\":\"1\",\"amount\":\"200.00\"},{\"product\":\"DHK TO BRS AC A2\",\"quantity\":\"1\",\"amount\":\"200.00\"},{\"product\":\"DHK TO BRS AC A3\",\"quantity\":\"1\",\"amount\":\"200.00\"},{\"product\":\"DHK TO BRS AC A4\",\"quantity\":\"2\",\"amount\":\"200.00\"}]");
       return parameters;
     }
 
@@ -75,7 +70,7 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
       return initResponse;
     }
 
-    public(bool, string) CheckIPNStatus(IFormCollection ipn)
+    public (bool, string) CheckIPNStatus(IFormCollection ipn)
     {
       if (string.IsNullOrWhiteSpace(ipn["status"]))
       {
@@ -105,7 +100,7 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
     {
       var verifyKey = "verify_key";
       var verifySignKey = "verify_sign";
-      
+
       if (string.IsNullOrWhiteSpace(formValue[verifyKey]) || string.IsNullOrWhiteSpace(formValue[verifySignKey]))
       {
         return false;
@@ -114,16 +109,13 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
       var keyList = formValue[verifyKey].ToString().Split(',').ToList<string>();
       var keyValues = new List<KeyValuePair<string, string>>();
 
-      // Store key and value in a list
       keyList.ForEach(key => keyValues.Add(new KeyValuePair<string, string>(key, formValue[key])));
 
-      // Store Hashed Password in list
       keyValues.Add(new KeyValuePair<string, string>(
         "store_passwd",
         MD5Hash.Generate(_config.StoreSecretKey)
       ));
 
-      // Sort the keyValues
       keyValues.Sort(
         delegate(KeyValuePair<string, string> pair1, KeyValuePair<string, string> pair2)
         {
@@ -131,18 +123,96 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
         }
       );
 
-      // Concat and make query string from keyValues
       var queryString = "";
       keyValues.ForEach(keyValue => queryString += $"{keyValue.Key}={keyValue.Value}&");
       queryString = queryString.TrimEnd('&');
 
-      // Make hash by query string and store
       var generatedHash = MD5Hash.Generate(queryString);
-
-      // Check if generated hash and verify_sign match or not
       var verifySign = formValue[verifySignKey].ToString();
       var isMatched = MD5Hash.Verify(generatedHash, verifySign, true);
       return isMatched;
     }
+
+    /// <summary>
+    /// After receiving the success response from SSLCommerz,
+    /// it should check IPN hash, tran_id and merchant information 
+    /// </summary>
+    /// <param name="formValue">formValue</param>
+    /// <returns></returns>
+    public async Task<(bool, string)> ValidateTransaction(string transactionId, decimal transactionAmount, string transactionCurrency, IFormCollection formValue)
+    {
+      var message = "";
+
+      var isHashVerified = VerifyIPNHash(formValue);
+      if (isHashVerified)
+      {
+        var valueIdKey = "val_id";
+        var validationUrl = $"{_config.BaseUrl}{_config.ValidationUrl}?";
+
+        var encodedValueId = HttpUtility.UrlEncode(formValue[valueIdKey]);
+        var encodedStoreId = HttpUtility.UrlEncode(_config.StoreId);
+        var encodedStorePassword = HttpUtility.UrlEncode(_config.StoreSecretKey);
+
+        validationUrl += $"val_id={encodedValueId}&";
+        validationUrl += $"store_id={encodedStoreId}&";
+        validationUrl += $"store_passwd={encodedStorePassword}&v=1&format=json";
+
+        var response = await _http.GetAsync(validationUrl);
+        if (response == null)
+        {
+          message = "Unable to get Transaction status";
+          return (false, message);
+        }
+        var validatorResponse = await response.Content.ReadAsJsonAsync<ValidatorResponse>();
+        if (validatorResponse.status == Status.VALID || validatorResponse.status == Status.VALIDATED)
+        {
+          var isValidTransaction = false;
+          if (transactionCurrency == Currency.BDT)
+          {
+            isValidTransaction = (
+              transactionId == validatorResponse.TransactionId &&
+              (Math.Abs(transactionAmount - Convert.ToDecimal(validatorResponse.Amount)) < 1)
+            );
+            if (isValidTransaction)
+            {
+              return (true, null);
+            }
+            else
+            {
+              message = "Amount not matching";
+              return (false, message);
+            }
+          }
+          else
+          {
+            isValidTransaction = (
+              transactionId == validatorResponse.TransactionId &&
+              (Math.Abs(transactionAmount - Convert.ToDecimal(validatorResponse.CurrencyAmount)) < 1) &&
+              transactionCurrency == validatorResponse.CurrencyType
+            );
+            if (isValidTransaction)
+            {
+              return (true, null);
+            }
+            else
+            {
+              message = "Currency Amount not matching";
+              return (false, message);
+            }
+          }
+        }
+        else
+        {
+          message = "This transaction is either expired or fails";
+          return (false, message);
+        }
+      }
+      else
+      {
+        message = "Unable to verify hash";
+        return (false, message);
+      }
+    }
+
   }
 }

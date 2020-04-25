@@ -4,10 +4,12 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Ecommerce.Backend.API.Helpers;
 using Ecommerce.Backend.Common.Models;
+using Ecommerce.Backend.Services.Abstractions;
 using Ecommerce.PaymentGateway.SSLCommerz.Models;
 using Ecommerce.PaymentGateway.SSLCommerz.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Ecommerce.Backend.API.Controllers
@@ -18,10 +20,23 @@ namespace Ecommerce.Backend.API.Controllers
   {
     private readonly IMapper _mapper;
     private readonly ISSLCommerzService _sslCommerzService;
-    public PaymentsController(ISSLCommerzService sslCommerzService, IMapper mapper)
+    private readonly ICustomerTransactionSessionService _customerTransactionSessionService;
+    private readonly ICartService _cartService;
+    private readonly ICustomerTransactionService _customerTransactionService;
+
+    public PaymentsController(
+      IMapper mapper,
+      ISSLCommerzService sslCommerzService,
+      ICartService cartService,
+      ICustomerTransactionSessionService customerTransactionSessionService,
+      ICustomerTransactionService customerTransactionService
+    )
     {
       _mapper = mapper;
+      _cartService = cartService;
       _sslCommerzService = sslCommerzService;
+      _customerTransactionService = customerTransactionService;
+      _customerTransactionSessionService = customerTransactionSessionService;
     }
 
     /// <summary>
@@ -32,12 +47,33 @@ namespace Ecommerce.Backend.API.Controllers
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [HttpPost("transaction/initiate")]
-    public async Task<ActionResult<ApiResponse<InitResponse>>> InitiateTransaction(Dictionary<string, string> parameters)
+    public async Task<ActionResult<ApiResponse<InitResponse>>> InitiateTransaction([FromBody] Dictionary<string, string> parameters)
     {
       try
       {
-        var response = await _sslCommerzService.InitiateTransaction(parameters);
-        return response.CreateSuccessResponse("Payment transaction initiated successfully!");
+        if (!parameters.ContainsKey("value_a"))
+        {
+          throw new Exception("Customer ID is not found");
+        }
+        if (!parameters.ContainsKey("currency"))
+        {
+          throw new Exception("Currency is not found");
+        }
+
+        var transactionId = ObjectId.GenerateNewId().ToString();
+        parameters.Add("tran_id", transactionId);
+
+        var customerId = parameters["value_a"];
+        var currency = parameters["currency"];
+
+        parameters = await _cartService.GetCartDetailToOrder(customerId, parameters);
+        var initResponse = await _sslCommerzService.InitiateTransaction(parameters);
+        var session = await _customerTransactionSessionService.AddSession(customerId, transactionId, currency, initResponse.SessionKey);
+        if (session == null)
+        {
+          throw new Exception("Invalid Session");
+        }
+        return initResponse.CreateSuccessResponse("Payment transaction initiated successfully!");
       }
       catch (Exception exception)
       {
@@ -49,12 +85,36 @@ namespace Ecommerce.Backend.API.Controllers
     /// Handle Successfull transaction
     /// </summary>
     [HttpPost("transaction/success")]
-    public ActionResult CompleteTransaction(IFormCollection keyValues, IPN ipn)
+    public async Task<ActionResult> CompleteTransaction(IFormCollection keyValues, IPN ipn)
     {
       try
       {
-        var isVerified = _sslCommerzService.VerifyIPNHash(keyValues);
-        return Ok(new { ipn, isVerified });
+        if (!keyValues.ContainsKey("value_a"))
+        {
+          throw new Exception("Customer ID is not found");
+        }
+
+        var customerId = keyValues["value_a"].ToString();
+        var session = await _customerTransactionSessionService.GetSessionByCustomerId(customerId);
+        if (session == null)
+        {
+          throw new Exception("Invalid session");
+        }
+
+        var(isValidated, message) = await _sslCommerzService.ValidateTransaction(ipn.TransactionId, session.Amount, session.Currency, keyValues);
+        if (isValidated)
+        {
+          var isTransactionExist = await _customerTransactionService.IsTransactionExist(session.SessionKey, session.TransactionId);
+          if (isTransactionExist)
+          {
+            await _customerTransactionSessionService.RemoveById(session.ID);
+            return Ok(new { isValidated, message = "Transaction already exist." });
+          }
+          await _customerTransactionService.AddTransaction(session, ipn);
+          await _customerTransactionSessionService.RemoveById(session.ID);
+        }
+        // TODO: save order information
+        return Ok(new { isValidated, message });
       }
       catch (Exception exception)
       {

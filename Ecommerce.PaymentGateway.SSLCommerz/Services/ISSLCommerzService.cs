@@ -9,6 +9,7 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
   {
     Task<InitResponse> InitiateTransaction(Dictionary<string, string> parameters);
     (bool, string) CheckIPNStatus(IFormCollection ipn);
+    Task <(bool, string)> ValidateTransaction(string transactionId, decimal transactionAmount, string transactionCurrency, IFormCollection formValue);
     bool VerifyIPNHash(IFormCollection ipn);
   }
 }

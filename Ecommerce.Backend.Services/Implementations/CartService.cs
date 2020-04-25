@@ -8,7 +8,6 @@ using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Entities;
 
@@ -40,7 +39,7 @@ namespace Ecommerce.Backend.Services.Implementations
       cart.Quantity = cart.Products.Sum(s => s.Quantity);
       cart.Products.ForEach(cartProduct =>
       {
-        cartProduct.TotalPrice = cartProduct.UnitPrice * cartProduct.Quantity;
+        cartProduct.TotalPrice = cartProduct.UnitPrice * (decimal) cartProduct.Quantity;
         cart.TotalPrice += cartProduct.TotalPrice;
       });
       await _carts.InsertOneAsync(cart);
@@ -52,7 +51,7 @@ namespace Ecommerce.Backend.Services.Implementations
     {
       cart.Products.ForEach(cartProduct =>
       {
-        cartProduct.TotalPrice = cartProduct.UnitPrice * cartProduct.Quantity;
+        cartProduct.TotalPrice = cartProduct.UnitPrice * (decimal) cartProduct.Quantity;
       });
       cart.TotalPrice = cart.Products.Sum(s => s.TotalPrice);
       cart.Quantity = cart.Products.Sum(s => s.Quantity);
@@ -141,7 +140,7 @@ namespace Ecommerce.Backend.Services.Implementations
       if (cartId.IsEmpty() || customerId.IsEmpty()) return null;
       var update = Builders<Cart>.Update.Set(cart => cart.CustomerId, customerId);
       var updatedCart = await UpdatePartial(cart => cart.ID == cartId, update);
-      updatedCart = await _populateCartProductsImage(updatedCart);   
+      updatedCart = await _populateCartProductsImage(updatedCart);
       return updatedCart;
     }
 
@@ -183,7 +182,7 @@ namespace Ecommerce.Backend.Services.Implementations
       if (cartProduct == null) return cart;
       cartProduct.Quantity = dto.Quantity;
       cartProduct.UnitPrice = product.Pricing.Price;
-      cartProduct.TotalPrice = cartProduct.UnitPrice * dto.Quantity;
+      cartProduct.TotalPrice = cartProduct.UnitPrice * (decimal) dto.Quantity;
       cart.Quantity = cart.Products.Sum(s => s.Quantity);
       cart.TotalPrice = cart.Products.Sum(s => s.TotalPrice);
 
@@ -209,6 +208,26 @@ namespace Ecommerce.Backend.Services.Implementations
       var updatedCart = await _carts.FindOneAndUpdateAsync(condition, update, options);
       updatedCart = await _populateCartProductsImage(updatedCart);
       return updatedCart;
+    }
+
+    public async Task<Dictionary<string, string>> GetCartDetailToOrder(string customerId, Dictionary<string, string> parameters = null)
+    {
+      if (parameters.IsEmpty())
+      {
+        parameters = new Dictionary<string, string>();
+      }
+      var cart = await GetCartById(customerId: customerId);
+      if (cart.IsEmpty()) return parameters;
+
+      var cartProductsDetail = cart.Products.Select(p => new
+      {
+        Product = p.Title,
+        Quantity = p.Quantity.ToString(),
+        Amount = p.TotalPrice.ToString()
+      }).ToJson();
+      parameters.Add("total_amount", cart.TotalPrice.ToString());
+      parameters.Add("cart", cartProductsDetail);
+      return parameters;
     }
   }
 }

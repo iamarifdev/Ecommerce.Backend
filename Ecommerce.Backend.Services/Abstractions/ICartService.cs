@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ecommerce.Backend.Common.DTO;
 using Ecommerce.Backend.Common.Models;
@@ -9,6 +10,7 @@ namespace Ecommerce.Backend.Services.Abstractions
   {
     Task<PagedList<Cart>> GetPaginatedCarts(PagedQuery query);
     Task<Cart> GetCartById(string cartId = null, string customerId = null);
+    Task<Dictionary<string, string>> GetCartDetailToOrder(string customerId, Dictionary<string, string> parameters = null);
     Task<Cart> AddCartProduct(AddCartProductDto dto);
     Task<Cart> AssignCustomerId(string cartId, string customerId);
     Task<Cart> UpdateProductQuantity(string cartId, UpdateCartProductDto dto);

@@ -3,13 +3,14 @@
   <ItemGroup>
     <ProjectReference Include="..\Ecommerce.Backend.Entities\Ecommerce.Backend.Entities.csproj" />
     <ProjectReference Include="..\Ecommerce.Backend.Common\Ecommerce.Backend.Common.csproj" />
+    <ProjectReference Include="..\Ecommerce.PaymentGateway.SSLCommerz\Ecommerce.PaymentGateway.SSLCommerz.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.3" />
-    <PackageReference Include="MongoDB.Driver" Version="2.10.2" />
-    <PackageReference Include="MongoDB.Entities" Version="11.3.5" />
+    <PackageReference Include="MongoDB.Driver" Version="2.10.3" />
+    <PackageReference Include="MongoDB.Entities" Version="12.1.2" />
     <PackageReference Include="System.Text.Json" Version="4.7.1" />
   </ItemGroup>
 

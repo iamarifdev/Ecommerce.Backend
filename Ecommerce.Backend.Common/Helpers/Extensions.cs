@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using Ecommerce.Backend.Common.Models;
 
 namespace Ecommerce.Backend.Common.Helpers
@@ -16,6 +17,17 @@ namespace Ecommerce.Backend.Common.Helpers
         Count = totalCount,
         Items = items
       };
+    }
+
+    public static string ToJson<T>(this IEnumerable<T> items)
+    {
+      var options = new JsonSerializerOptions
+      {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = true
+      };
+      var json = JsonSerializer.Serialize(items, options);
+      return json;
     }
   }
 }

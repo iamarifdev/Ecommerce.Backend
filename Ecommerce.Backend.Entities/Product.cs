@@ -19,7 +19,7 @@ namespace Ecommerce.Backend.Entities
   {
     [BsonElement("price")]
     [BsonRequired]
-    public double Price { get; set; }
+    public decimal Price { get; set; }
   }
 
   public class ProductColor
