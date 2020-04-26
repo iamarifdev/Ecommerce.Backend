@@ -11,10 +11,8 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Configurations
     string ValidationUrl { get; set; }
     string CheckingUrl { get; set; }
     string IPNListnerUrl { get; set; }
-    string AppBaseUrl { get; set; }
-    string SuccessUrl { get; set; }
-    string CancelUrl { get; set; }
-    string FailUrl { get; set; }
+    API API { get; set; }
+    APP APP { get; set; }
   }
 
   public class Merchant
@@ -24,6 +22,21 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Configurations
     public string Email { get; set; }
     public string Mobile { get; set; }
   }
+
+  public class API
+  {
+    public string BaseUrl { get; set; }
+    public string SuccessUrl { get; set; }
+    public string CancelUrl { get; set; }
+    public string FailUrl { get; set; }
+
+    public string GetSuccessUrl() => $"{BaseUrl}{SuccessUrl}";
+    public string GetCancelUrl() => $"{BaseUrl}{CancelUrl}";
+    public string GetFailUrl() => $"{BaseUrl}{FailUrl}";
+
+  }
+
+  public class APP : API { }
 
   public class SSLCommerzConfig : ISSLCommerzConfig
   {
@@ -36,9 +49,7 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Configurations
     public string ValidationUrl { get; set; }
     public string CheckingUrl { get; set; }
     public string IPNListnerUrl { get; set; }
-    public string AppBaseUrl { get; set; }
-    public string SuccessUrl { get; set; }
-    public string CancelUrl { get; set; }
-    public string FailUrl { get; set; }
+    public API API { get; set; }
+    public APP APP { get; set; }
   }
 }

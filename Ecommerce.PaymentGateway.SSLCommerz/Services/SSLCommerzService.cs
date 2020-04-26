@@ -28,9 +28,9 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Services
       // Integration Required Parameters
       parameters.Add("store_id", _config.StoreId);
       parameters.Add("store_passwd", _config.StoreSecretKey);
-      parameters.Add("success_url", $"{_config.AppBaseUrl}{_config.SuccessUrl}");
-      parameters.Add("fail_url", $"{_config.AppBaseUrl}{_config.FailUrl}");
-      parameters.Add("cancel_url", $"{_config.AppBaseUrl}{_config.CancelUrl}");
+      parameters.Add("success_url", $"{_config.API.BaseUrl}{_config.API.SuccessUrl}");
+      parameters.Add("fail_url", $"{_config.API.BaseUrl}{_config.API.FailUrl}");
+      parameters.Add("cancel_url", $"{_config.API.BaseUrl}{_config.API.CancelUrl}");
       parameters.Add("ipn_url", _config.IPNListnerUrl);
       parameters.Add("emi_option", $"{EMIOption.Enabled}");
 

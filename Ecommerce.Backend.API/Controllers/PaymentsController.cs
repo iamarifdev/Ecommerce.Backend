@@ -5,6 +5,7 @@ using AutoMapper;
 using Ecommerce.Backend.API.Helpers;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Services.Abstractions;
+using Ecommerce.PaymentGateway.SSLCommerz.Configurations;
 using Ecommerce.PaymentGateway.SSLCommerz.Models;
 using Ecommerce.PaymentGateway.SSLCommerz.Services;
 using Microsoft.AspNetCore.Http;
@@ -22,17 +23,20 @@ namespace Ecommerce.Backend.API.Controllers
     private readonly ISSLCommerzService _sslCommerzService;
     private readonly ICustomerTransactionSessionService _customerTransactionSessionService;
     private readonly ICartService _cartService;
+    private readonly ISSLCommerzConfig _config;
     private readonly ICustomerTransactionService _customerTransactionService;
 
     public PaymentsController(
       IMapper mapper,
-      ISSLCommerzService sslCommerzService,
+      ISSLCommerzConfig config,
       ICartService cartService,
-      ICustomerTransactionSessionService customerTransactionSessionService,
-      ICustomerTransactionService customerTransactionService
+      ISSLCommerzService sslCommerzService,
+      ICustomerTransactionService customerTransactionService,
+      ICustomerTransactionSessionService customerTransactionSessionService
     )
     {
       _mapper = mapper;
+      _config = config;
       _cartService = cartService;
       _sslCommerzService = sslCommerzService;
       _customerTransactionService = customerTransactionService;
@@ -114,6 +118,11 @@ namespace Ecommerce.Backend.API.Controllers
           await _customerTransactionSessionService.RemoveById(session.ID);
         }
         // TODO: save order information
+        if (isValidated)
+        {
+          Response.Headers.Add("amount", ipn.Amount.ToString());
+          return Redirect(_config.APP.GetSuccessUrl());
+        }
         return Ok(new { isValidated, message });
       }
       catch (Exception exception)
