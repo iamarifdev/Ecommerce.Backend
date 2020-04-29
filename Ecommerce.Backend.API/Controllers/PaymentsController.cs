@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Ecommerce.Backend.API.Helpers;
+using Ecommerce.Backend.Common.DTO;
 using Ecommerce.Backend.Common.Models;
 using Ecommerce.Backend.Services.Abstractions;
 using Ecommerce.PaymentGateway.SSLCommerz.Configurations;
@@ -51,28 +52,20 @@ namespace Ecommerce.Backend.API.Controllers
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [HttpPost("transaction/initiate")]
-    public async Task<ActionResult<ApiResponse<InitResponse>>> InitiateTransaction([FromBody] Dictionary<string, string> parameters)
+    public async Task<ActionResult<ApiResponse<InitResponse>>> InitiateTransaction([FromBody] OrderAddDto dto)
     {
       try
       {
-        if (!parameters.ContainsKey("value_a"))
-        {
-          throw new Exception("Customer ID is not found");
-        }
-        if (!parameters.ContainsKey("currency"))
-        {
-          throw new Exception("Currency is not found");
-        }
-
+        var parameters = new Dictionary<string, string>();
         var transactionId = ObjectId.GenerateNewId().ToString();
+
+        parameters.Add("value_a",  dto.CustomerId);
+        parameters.Add("currency", dto.Currency);
         parameters.Add("tran_id", transactionId);
 
-        var customerId = parameters["value_a"];
-        var currency = parameters["currency"];
-
-        parameters = await _cartService.GetCartDetailToOrder(customerId, parameters);
+        parameters = await _cartService.GetCartDetailToOrder(dto.CustomerId, parameters);
         var initResponse = await _sslCommerzService.InitiateTransaction(parameters);
-        var session = await _customerTransactionSessionService.AddSession(customerId, transactionId, currency, initResponse.SessionKey);
+        var session = await _customerTransactionSessionService.AddSession(dto.CustomerId, transactionId, dto.Currency, initResponse.SessionKey);
         if (session == null)
         {
           throw new Exception("Invalid Session");
@@ -118,10 +111,12 @@ namespace Ecommerce.Backend.API.Controllers
           await _customerTransactionSessionService.RemoveById(session.ID);
         }
         // TODO: save order information
+        var parameters = new List<KeyValuePair<string, string>>();
         if (isValidated)
         {
-          Response.Headers.Add("amount", ipn.Amount.ToString());
-          return Redirect(_config.APP.GetSuccessUrl());
+          parameters.Add(new KeyValuePair<string, string>("amount", ipn.Amount.ToString()));
+          parameters.Add(new KeyValuePair<string, string>("transactionId", ipn.TransactionId));
+          return Redirect(_config.APP.GetSuccessUrl(parameters));
         }
         return Ok(new { isValidated, message });
       }

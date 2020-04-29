@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Ecommerce.PaymentGateway.SSLCommerz.Configurations
 {
   public interface ISSLCommerzConfig
@@ -30,10 +32,27 @@ namespace Ecommerce.PaymentGateway.SSLCommerz.Configurations
     public string CancelUrl { get; set; }
     public string FailUrl { get; set; }
 
-    public string GetSuccessUrl() => $"{BaseUrl}{SuccessUrl}";
-    public string GetCancelUrl() => $"{BaseUrl}{CancelUrl}";
-    public string GetFailUrl() => $"{BaseUrl}{FailUrl}";
+    private string _buildQueryString(List<KeyValuePair<string, string>> parameters)
+    {
+      var queryString = "?";
+      parameters.ForEach(keyValue => queryString += $"{keyValue.Key}={keyValue.Value}&");
+      queryString = queryString.TrimEnd('&');
+      return queryString;
+    }
 
+    private string _getUrl(List<KeyValuePair<string, string>> parameters, string urlPart)
+    {
+      if (parameters == null)
+      {
+        return $"{BaseUrl}{urlPart}";
+      }
+      var queryString = _buildQueryString(parameters);
+      return $"{BaseUrl}{urlPart}{queryString}";
+    }
+
+    public string GetSuccessUrl(List<KeyValuePair<string, string>> parameters = null) => _getUrl(parameters, SuccessUrl);
+    public string GetCancelUrl(List<KeyValuePair<string, string>> parameters = null) => _getUrl(parameters, CancelUrl);
+    public string GetFailUrl(List<KeyValuePair<string, string>> parameters = null) => _getUrl(parameters, FailUrl);
   }
 
   public class APP : API { }

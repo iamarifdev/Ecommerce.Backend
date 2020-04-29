@@ -8,5 +8,6 @@ namespace Ecommerce.Backend.Services.Abstractions
   public interface IOrderService : IBaseService<Order>
   {
     Task<PagedList<OrderListItemDto>> GetPaginatedOrderList(PagedQuery query);
+    Task<Order> AddOrderWithoutPayment(OrderAddDto dto);
   }
 }

@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="3.1.3" />
     <PackageReference Include="MongoDB.Driver" Version="2.10.3" />
+    <PackageReference Include="MongoDB.Entities" Version="12.1.2" />
     <PackageReference Include="System.Text.Json" Version="4.7.1" />
   </ItemGroup>
 

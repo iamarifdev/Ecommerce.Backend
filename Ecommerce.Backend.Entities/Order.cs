@@ -8,11 +8,15 @@ namespace Ecommerce.Backend.Entities
 {
   public enum OrderStatus
   {
-    PaymentReceived = 1,
-    Shipped = 2,
-    HandOverToCourier = 3,
-    DeliveredToCustomer = 4,
-    ReceivedByCustomer = 5
+    OrderReceived = 1,
+    PaymentReceived = 2,
+    Confirmed = 3,
+    Shipped = 4,
+    HandOverToCourier = 5,
+    DeliveredToCustomer = 6,
+    ReceivedByCustomer = 7,
+    CancelledByCustomer = 8,
+    Cancelled = 8,
   }
 
   public class Order : BaseEntityWithStatus
@@ -20,6 +24,11 @@ namespace Ecommerce.Backend.Entities
     [BsonElement("customer")]
     [BsonRequired]
     public One<Customer> CustomerRef { get; set; }
+
+    [BsonElement("transactionId")]
+    [BsonIgnoreIfNull]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string TransactionId { get; set; }
 
     [BsonElement("orderProducts")]
     [BsonRequired]
@@ -57,7 +66,7 @@ namespace Ecommerce.Backend.Entities
 
     [BsonElement("unitPrice")]
     [BsonRequired]
-    public double UnitPrice { get; set; }
+    public decimal UnitPrice { get; set; }
 
     [BsonElement("color")]
     [BsonRequired]
@@ -69,7 +78,7 @@ namespace Ecommerce.Backend.Entities
 
     [BsonIgnoreIfNull]
     [BsonElement("totalPrice")]
-    public double TotalPrice { get; set; }
+    public decimal TotalPrice { get; set; }
   }
 
   public class OrderTracking
@@ -85,5 +94,19 @@ namespace Ecommerce.Backend.Entities
     [BsonElement("updatedAt")]
     [BsonRequired]
     public DateTime UpdatedAt { get; set; } = DateTime.Now;
+
+    public static string GetDescription(OrderStatus status)
+    {
+      var map = new Dictionary<OrderStatus, string>();
+      map.Add(OrderStatus.OrderReceived, "Order has been received, waiting to be confirmed");
+      map.Add(OrderStatus.PaymentReceived, "Order with payment has been received, waiting to be confirmed");
+      map.Add(OrderStatus.Confirmed, "Order has been confirmed, waiting to be shipped");
+      map.Add(OrderStatus.Shipped, "Ordered items has been shipped");
+      map.Add(OrderStatus.HandOverToCourier, "Ordered items has been handed over to courier");
+      map.Add(OrderStatus.DeliveredToCustomer, "Ordered items has been delivered to customer");
+      map.Add(OrderStatus.CancelledByCustomer, "Ordered has been cancelled by customer");
+      map.Add(OrderStatus.Cancelled, "Ordered has been cancelled");
+      return map[status];
+    }
   }
 }

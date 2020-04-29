@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using Ecommerce.Backend.Common.Models;
+using MongoDB.Entities;
+using MongoDB.Entities.Core;
 
 namespace Ecommerce.Backend.Common.Helpers
 {
@@ -28,6 +30,11 @@ namespace Ecommerce.Backend.Common.Helpers
       };
       var json = JsonSerializer.Serialize(items, options);
       return json;
+    }
+
+    public static One<T> ToReference<T>(this string id) where T : Entity
+    {
+      return new One<T> { ID = id };
     }
   }
 }

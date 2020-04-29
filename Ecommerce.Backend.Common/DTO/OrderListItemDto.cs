@@ -102,7 +102,7 @@ namespace Ecommerce.Backend.Common.DTO
     public string Color { get; set; }
     public double? Size { get; set; }
     public double? Quantity { get; set; }
-    public double? TotalPrice { get; set; }
-    public double? UnitPrice { get; set; }
+    public decimal? TotalPrice { get; set; }
+    public decimal? UnitPrice { get; set; }
   }
 }

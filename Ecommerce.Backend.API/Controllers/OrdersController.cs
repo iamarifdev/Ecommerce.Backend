@@ -65,12 +65,11 @@ namespace Ecommerce.Backend.API.Controllers
     /// Add a new order
     /// </summary>
     [HttpPost("add")]
-    public async Task<ActionResult<ApiResponse<Order>>> Add(Order order)
+    public async Task<ActionResult<ApiResponse<Order>>> Add(OrderAddDto dto)
     {
       try
       {
-        // var order = _mapper.Map<Order>(dto);
-        var createdOrder = await _orderService.Add(order);
+        var createdOrder = await _orderService.AddOrderWithoutPayment(dto);
         return createdOrder.CreateSuccessResponse("Order created successfully!");
       }
       catch (Exception exception)
