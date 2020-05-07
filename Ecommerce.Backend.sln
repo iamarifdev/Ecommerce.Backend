@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ecommerce.Backend.Common", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ecommerce.PaymentGateway.SSLCommerz", "Ecommerce.PaymentGateway.SSLCommerz\Ecommerce.PaymentGateway.SSLCommerz.csproj", "{9F339F1B-8236-46B5-AF19-4914D319B250}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ecommerce.Backend.Services.Tests", "Ecommerce.Backend.Services.Tests\Ecommerce.Backend.Services.Tests.csproj", "{73E13441-0F52-409A-B1E0-F02A22388606}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,5 +88,17 @@ Global
 		{9F339F1B-8236-46B5-AF19-4914D319B250}.Release|x64.Build.0 = Release|Any CPU
 		{9F339F1B-8236-46B5-AF19-4914D319B250}.Release|x86.ActiveCfg = Release|Any CPU
 		{9F339F1B-8236-46B5-AF19-4914D319B250}.Release|x86.Build.0 = Release|Any CPU
+		{73E13441-0F52-409A-B1E0-F02A22388606}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73E13441-0F52-409A-B1E0-F02A22388606}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73E13441-0F52-409A-B1E0-F02A22388606}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{73E13441-0F52-409A-B1E0-F02A22388606}.Debug|x64.Build.0 = Debug|Any CPU
+		{73E13441-0F52-409A-B1E0-F02A22388606}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{73E13441-0F52-409A-B1E0-F02A22388606}.Debug|x86.Build.0 = Debug|Any CPU
+		{73E13441-0F52-409A-B1E0-F02A22388606}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73E13441-0F52-409A-B1E0-F02A22388606}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73E13441-0F52-409A-B1E0-F02A22388606}.Release|x64.ActiveCfg = Release|Any CPU
+		{73E13441-0F52-409A-B1E0-F02A22388606}.Release|x64.Build.0 = Release|Any CPU
+		{73E13441-0F52-409A-B1E0-F02A22388606}.Release|x86.ActiveCfg = Release|Any CPU
+		{73E13441-0F52-409A-B1E0-F02A22388606}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
