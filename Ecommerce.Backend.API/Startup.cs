@@ -7,7 +7,6 @@ using System.Text.Json;
 using Ecommerce.Backend.API.Helpers;
 using Ecommerce.Backend.API.Middlewares;
 using Ecommerce.Backend.API.Validators;
-using Ecommerce.Backend.Entities;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +14,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -49,7 +47,6 @@ namespace Ecommerce.Backend.API
       services.AddCors();
       services.AddControllers();
       services.AddResponseCompression();
-      services.AddDbContext<TokenStoreDbContext>(options => options.UseSqlite("Filename=./tokenstore.db"));
 
       services.AddMvc(Options => Options.Filters.Add(new ValidateModelStateAttribute()))
         .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<AddCartProductValidator>())
@@ -65,16 +62,12 @@ namespace Ecommerce.Backend.API
         {
           options.TokenValidationParameters = new TokenValidationParameters
           {
-          ValidateIssuerSigningKey = true,
-          IssuerSigningKey = new SymmetricSecurityKey(
-          Encoding.UTF8.GetBytes(
-          Configuration.GetSection("JwtConfig:AccessTokenSecretKey").Value
-          )
-          ),
-          ValidateAudience = false,
-          ValidateIssuer = false,
-          RequireExpirationTime = true,
-          ValidateLifetime = true
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("JwtConfig:AccessTokenSecretKey").Value)),
+            ValidateAudience = false,
+            ValidateIssuer = false,
+            RequireExpirationTime = true,
+            ValidateLifetime = true
           };
         });
 
@@ -93,10 +86,10 @@ namespace Ecommerce.Backend.API
           {
             Description =
               "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
-              Name = "Authorization",
-              In = ParameterLocation.Header,
-              Type = SecuritySchemeType.ApiKey,
-              Scheme = "Bearer"
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer"
           });
         config.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
@@ -124,9 +117,9 @@ namespace Ecommerce.Backend.API
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
       app.UseForwardedHeaders(new ForwardedHeadersOptions //needed for nginx reverse proxy
-        {
-          ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-        });
+      {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+      });
       if (env.IsDevelopment())
       {
         app.UseDeveloperExceptionPage();

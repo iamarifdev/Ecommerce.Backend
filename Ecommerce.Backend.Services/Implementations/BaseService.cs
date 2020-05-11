@@ -46,6 +46,12 @@ namespace Ecommerce.Backend.Services.Implementations
       return entity;
     }
 
+    public async Task<IEnumerable<TEntity>> GetAllByExpression(Expression<Func<TEntity, bool>> expression)
+    {
+      var entities = await _entities.FindAsync<TEntity>(expression).Result.ToListAsync();
+      return entities;
+    }
+
     public async Task<bool> IsExist(Expression<Func<TEntity, bool>> expression)
     {
       var entity = await _entities.FindAsync<TEntity>(expression).Result.FirstOrDefaultAsync();
@@ -124,8 +130,31 @@ namespace Ecommerce.Backend.Services.Implementations
         .Set(s => s.IsEnabled, false)
         .Set(s => s.IsDeleted, true)
         .Set(s => s.UpdatedAt, DateTime.Now);
-      var deletedEntity = await _entities.FindOneAndUpdateAsync<TEntity>(x => x.ID == id, update, _options);
-      return deletedEntity;
+      var removedEntity = await _entities.FindOneAndUpdateAsync<TEntity>(x => x.ID == id, update, _options);
+      return removedEntity;
+    }
+
+    /// <summary>
+    /// Delete an entity completely from database by id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+
+    public async Task<bool> DeleteById(string id)
+    {
+      var deletedResult = await _entities.DeleteOneAsync<TEntity>(x => x.ID == id);
+      return deletedResult.DeletedCount > 0;
+    }
+
+    /// <summary>
+    /// Delete entites completely from database expression
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public async Task<bool> DeleteByExpression(Expression<Func<TEntity, bool>> expression)
+    {
+      var deletedResult = await _entities.DeleteManyAsync<TEntity>(expression);
+      return deletedResult.DeletedCount > 0;
     }
 
     public async Task<TEntity> ToggleActivationById(string id, bool status)

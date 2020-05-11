@@ -1,6 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,17 +11,18 @@ using Ecommerce.Backend.Common.Helpers;
 using Ecommerce.Backend.Entities;
 using Ecommerce.Backend.Services.Abstractions;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;
 
 namespace Ecommerce.Backend.Services.Implementations
 {
   public class CustomerAuthService : BaseService<Customer>, ICustomerAuthService
   {
-    private readonly TokenStoreDbContext _dbContext;
+    private readonly ICustomerLoginService _customerLoginService;
     private readonly IJwtConfig _jwtConfig;
 
-    public CustomerAuthService(TokenStoreDbContext dbContext, IJwtConfig jwtConfig)
+    public CustomerAuthService(ICustomerLoginService customerLoginService, IJwtConfig jwtConfig)
     {
-      _dbContext = dbContext;
+      _customerLoginService = customerLoginService;
       _jwtConfig = jwtConfig;
     }
 
@@ -45,29 +47,29 @@ namespace Ecommerce.Backend.Services.Implementations
       return token;
     }
 
-    private bool RevokeRefreshToken(string customerId, string refreshToken)
+    private async Task<bool> RevokeRefreshToken(string customerId, string refreshToken)
     {
-      var customerLogin = _dbContext.CustomerLogins.FirstOrDefault(
+      var customerLogin = await _customerLoginService.GetByExpression(
         login => login.CustomerId == customerId && login.RefreshToken == refreshToken
       );
       if (customerLogin.IsNotEmpty())
       {
-        _dbContext.CustomerLogins.Remove(customerLogin);
+        await _customerLoginService.DeleteById(customerLogin.ID);
         return true;
       }
       return false;
     }
 
-    private(bool, int) RevokeAllRefreshToken(string customerId, string refreshToken)
+    private async Task<(bool, int)> RevokeAllRefreshToken(string customerId, string refreshToken)
     {
-      var userLogin = _dbContext.CustomerLogins.FirstOrDefault(
+      var userLogin = await _customerLoginService.GetByExpression(
         login => login.CustomerId == customerId && login.RefreshToken == refreshToken
       );
       if (userLogin.IsNotEmpty())
       {
-        var loggedInDevices = _dbContext.CustomerLogins.Where(login => login.CustomerId == userLogin.CustomerId).ToList();
-        _dbContext.CustomerLogins.RemoveRange(loggedInDevices);
-        return (true, loggedInDevices.Count);
+        var loggedInDevices = await _customerLoginService.GetAllByExpression(login => login.CustomerId == userLogin.CustomerId);
+        await _customerLoginService.DeleteByExpression(login => login.CustomerId == userLogin.CustomerId);
+        return (true, loggedInDevices.Count());
       }
       return (false, 0);
     }
@@ -96,18 +98,18 @@ namespace Ecommerce.Backend.Services.Implementations
     {
       if (oldToken.IsNotEmpty())
       {
-        var existingCustomerLogin = _dbContext.CustomerLogins.FirstOrDefault(x =>
-          x.AccessToken == oldToken.AccessToken &&
-          x.RefreshToken == oldToken.RefreshToken &&
-          x.CustomerId == oldToken.UserId
-        );
+        Expression<Func<CustomerLogin, bool>> expression = (x) =>
+         x.AccessToken == oldToken.AccessToken &&
+         x.RefreshToken == oldToken.RefreshToken &&
+         x.CustomerId == oldToken.UserId;
+        var existingCustomerLogin = await _customerLoginService.GetByExpression(expression);
         if (existingCustomerLogin.IsNotEmpty())
         {
-          existingCustomerLogin.AccessToken = accessToken;
-          existingCustomerLogin.RefreshToken = refreshToken;
-          existingCustomerLogin.UpdateAt = DateTime.Now;
-          _dbContext.CustomerLogins.Update(existingCustomerLogin);
-          await _dbContext.SaveChangesAsync();
+          var update = Builders<CustomerLogin>.Update
+           .Set(cart => cart.AccessToken, accessToken)
+           .Set(cart => cart.RefreshToken, refreshToken)
+           .Set(cart => cart.UpdatedAt, DateTime.Now);
+          await _customerLoginService.UpdatePartial(expression, update);
         }
       }
       else
@@ -118,8 +120,7 @@ namespace Ecommerce.Backend.Services.Implementations
           AccessToken = accessToken,
           RefreshToken = refreshToken
         };
-        await _dbContext.CustomerLogins.AddAsync(customerLogin);
-        await _dbContext.SaveChangesAsync();
+        await _customerLoginService.Add(customerLogin);
       }
     }
 
@@ -167,15 +168,15 @@ namespace Ecommerce.Backend.Services.Implementations
     {
       var customer = await GetByExpression(u => u.PhoneNo == phoneNo);
       if (customer.IsEmpty()) return false;
-      return RevokeRefreshToken(customer.ID, refreshToken);
+      return await RevokeRefreshToken(customer.ID, refreshToken);
     }
 
-    public async Task <(bool, int)> LogOutFromAllDevice(string phoneNo, string refreshToken)
+    public async Task<(bool, int)> LogOutFromAllDevice(string phoneNo, string refreshToken)
     {
       var countLoggedInDevice = 0;
       var customer = await GetByExpression(u => u.PhoneNo == phoneNo);
       if (customer.IsEmpty()) return (false, countLoggedInDevice);
-      var loggedOutStatus = RevokeAllRefreshToken(customer.ID, refreshToken);
+      var loggedOutStatus = await RevokeAllRefreshToken(customer.ID, refreshToken);
       return loggedOutStatus;
     }
   }

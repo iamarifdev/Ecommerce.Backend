@@ -23,11 +23,11 @@ namespace Ecommerce.Backend.Services.Implementations
       var items = await GetPaginatedList<CustomerListItemDto>(query, customer => new CustomerListItemDto
       {
         ID = customer.ID,
-          FullName = customer.FullName,
-          AvatarUrl = customer.AvatarUrl,
-          Email = customer.Email,
-          PhoneNo = customer.PhoneNo,
-          ProfileCompleteness = customer.ProfileCompleteness
+        FullName = customer.FullName,
+        AvatarUrl = customer.AvatarUrl,
+        Email = customer.Email,
+        PhoneNo = customer.PhoneNo,
+        ProfileCompleteness = customer.ProfileCompleteness
       });
       return items;
     }

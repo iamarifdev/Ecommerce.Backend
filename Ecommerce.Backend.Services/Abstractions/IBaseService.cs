@@ -15,6 +15,7 @@ namespace Ecommerce.Backend.Services.Abstractions
     Task<PagedList<TEntity>> GetPaginatedList(PagedQuery query);
     Task<PagedList<TDto>> GetPaginatedList<TDto>(PagedQuery query, Expression<Func<TEntity, TDto>> projection) where TDto: class;
     Task<TEntity> GetByExpression(Expression<Func<TEntity, bool>> expression);
+    Task<IEnumerable<TEntity>> GetAllByExpression(Expression<Func<TEntity, bool>> expression);
     Task<bool> IsExist(Expression<Func<TEntity, bool>> expression);
     Task<bool> IsExist(BsonDocument condition);
     Task<TEntity> GetById(string id);
@@ -26,5 +27,7 @@ namespace Ecommerce.Backend.Services.Abstractions
     Task<TEntity> UpdateById(string id, TEntity entity);
     Task<TEntity> ToggleActivationById(string id, bool status);
     Task<TEntity> RemoveById(string id);
+    Task<bool> DeleteById(string id);
+    Task<bool> DeleteByExpression(Expression<Func<TEntity, bool>> expression);
   }
 }

@@ -1,5 +1,3 @@
-using Ecommerce.Backend.API.Helpers;
-using Ecommerce.Backend.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 namespace Ecommerce.Backend.API
@@ -12,7 +10,6 @@ namespace Ecommerce.Backend.API
     {
       CreateHostBuilder(args)
         .Build()
-        .MigrateDatabase<TokenStoreDbContext>()
         .Run();
     }
 

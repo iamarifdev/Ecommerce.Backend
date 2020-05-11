@@ -1,23 +1,24 @@
+using MongoDB.Bson.Serialization.Attributes;
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace Ecommerce.Backend.Entities
 {
-  public class CustomerLogin
+  public class CustomerLogin : BaseEntityWithStatus
   {
-    [Required]
+    [BsonElement("customerLoginId")]
+    [BsonRequired]
     public int CustomerLoginId { get; set; }
 
-    [Required]
+    [BsonElement("customerId")]
+    [BsonRequired]
     public string CustomerId { get; set; }
 
-    [Required]
+    [BsonElement("accessToken")]
+    [BsonRequired]
     public string AccessToken { get; set; }
 
-    [Required]
+    [BsonElement("refreshToken")]
+    [BsonRequired]
     public string RefreshToken { get; set; }
-
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
-    public DateTime UpdateAt { get; set; } = DateTime.Now;
   }
 }

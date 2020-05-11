@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,21 +17,21 @@ using MongoDB.Entities;
 
 namespace Ecommerce.Backend.Services.Implementations
 {
-  public class AuthService: IAuthService
+  public class AuthService : IAuthService
   {
-    private readonly TokenStoreDbContext _dbContext;
     private readonly IUserService _userService;
+    private readonly IUserLoginService _userLoginService;
     private readonly IRoleService _roleService;
     private readonly IJwtConfig _jwtConfig;
 
     public AuthService(
-      TokenStoreDbContext dbContext,
+      IUserLoginService userLoginService,
       IRoleService roleService,
       IUserService userService,
       IJwtConfig jwtConfig
     )
     {
-      _dbContext = dbContext;
+      _userLoginService = userLoginService;
       _roleService = roleService;
       _userService = userService;
       _jwtConfig = jwtConfig;
@@ -58,36 +59,36 @@ namespace Ecommerce.Backend.Services.Implementations
       return token;
     }
 
-    private bool RevokeRefreshToken(string userId, string refreshToken)
+    private async Task<bool> RevokeRefreshToken(string userId, string refreshToken)
     {
-      var userLogin = _dbContext.UserLogins.FirstOrDefault(
+      var userLogin = await _userLoginService.GetByExpression(
         login => login.UserId == userId && login.RefreshToken == refreshToken
       );
       if (userLogin.IsNotEmpty())
       {
-        _dbContext.UserLogins.Remove(userLogin);
+        await _userLoginService.DeleteById(userLogin.ID);
         return true;
       }
       return false;
     }
 
-    private(bool, int) RevokeAllRefreshToken(string userId, string refreshToken)
+    private async Task<(bool, int)> RevokeAllRefreshToken(string userId, string refreshToken)
     {
-      var userLogin = _dbContext.UserLogins.FirstOrDefault(
+      var userLogin = await _userLoginService.GetByExpression(
         login => login.UserId == userId && login.RefreshToken == refreshToken
       );
       if (userLogin.IsNotEmpty())
       {
-        var loggedInDevices = _dbContext.UserLogins.Where(login => login.UserId == userLogin.UserId).ToList();
-        _dbContext.UserLogins.RemoveRange(loggedInDevices);
-        return (true, loggedInDevices.Count);
+        var loggedInDevices = await _userLoginService.GetAllByExpression(login => login.UserId == userLogin.UserId);
+        await _userLoginService.DeleteByExpression(login => login.UserId == userLogin.UserId);
+        return (true, loggedInDevices.Count());
       }
       return (false, 0);
     }
 
-    public async Task <(Role, User)> SeedDatabase()
+    public async Task<(Role, User)> SeedDatabase()
     {
-      using(var transaction = new Transaction())
+      using (var transaction = new Transaction())
       {
         try
         {
@@ -162,18 +163,18 @@ namespace Ecommerce.Backend.Services.Implementations
     {
       if (oldToken.IsNotEmpty())
       {
-        var existingUserLogin = _dbContext.UserLogins.FirstOrDefault(x =>
+        Expression<Func<UserLogin, bool>> expression = (x) =>
           x.AccessToken == oldToken.AccessToken &&
           x.RefreshToken == oldToken.RefreshToken &&
-          x.UserId == oldToken.UserId
-        );
+          x.UserId == oldToken.UserId;
+        var existingUserLogin = await _userLoginService.GetByExpression(expression);
         if (existingUserLogin.IsNotEmpty())
         {
-          existingUserLogin.AccessToken = accessToken;
-          existingUserLogin.RefreshToken = refreshToken;
-          existingUserLogin.UpdateAt = DateTime.Now;
-          _dbContext.UserLogins.Update(existingUserLogin);
-          await _dbContext.SaveChangesAsync();
+          var update = Builders<UserLogin>.Update
+            .Set(cart => cart.AccessToken, accessToken)
+            .Set(cart => cart.RefreshToken, refreshToken)
+            .Set(cart => cart.UpdatedAt, DateTime.Now);
+          await _userLoginService.UpdatePartial(expression, update);
         }
       }
       else
@@ -184,8 +185,7 @@ namespace Ecommerce.Backend.Services.Implementations
           AccessToken = accessToken,
           RefreshToken = refreshToken
         };
-        await _dbContext.UserLogins.AddAsync(userLogin);
-        await _dbContext.SaveChangesAsync();
+        await _userLoginService.Add(userLogin);
       }
     }
 
@@ -232,15 +232,15 @@ namespace Ecommerce.Backend.Services.Implementations
     {
       var user = await _userService.GetByExpression(u => u.Username.ToLower() == username.ToLower());
       if (user.IsEmpty()) return false;
-      return RevokeRefreshToken(user.ID, refreshToken);
+      return await RevokeRefreshToken(user.ID, refreshToken);
     }
 
-    public async Task <(bool, int)> LogOutFromAllDevice(string username, string refreshToken)
+    public async Task<(bool, int)> LogOutFromAllDevice(string username, string refreshToken)
     {
       var countLoggedInDevice = 0;
       var user = await _userService.GetByExpression(u => u.Username.ToLower() == username.ToLower());
       if (user.IsEmpty()) return (false, countLoggedInDevice);
-      var loggedOutStatus = RevokeAllRefreshToken(user.ID, refreshToken);
+      var loggedOutStatus = await RevokeAllRefreshToken(user.ID, refreshToken);
       return loggedOutStatus;
     }
   }
