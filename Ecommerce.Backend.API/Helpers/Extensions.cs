@@ -37,7 +37,7 @@ namespace Ecommerce.Backend.API.Helpers
       switch (dbSetting.Env)
       {
         case "Dev":
-          services.AddMongoDBEntities(dbSetting.DatabaseName);
+          services.AddMongoDBEntities(dbSetting.DbSettings, dbSetting.DatabaseName);
           break;
         case "Prod":
           services.AddMongoDBEntities(dbSetting.DbSettings, dbSetting.DatabaseName);
